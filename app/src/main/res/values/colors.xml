@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Paleta principal de la app -->
+    <color name="blue_light">#A7EBF2</color>
+    <color name="blue_medium_light">#54ACBF</color>
+    <color name="blue_medium">#26658C</color>
+    <color name="blue_dark">#023859</color>
+    <color name="blue_navy">#011C40</color>
+
+    <color name="primary_geobiz">#26658C</color>
+    <color name="on_primary_geobiz">#FFFFFF</color>
+
+    <color name="secondary_geobiz">#54ACBF</color>
+    <color name="on_secondary_geobiz">#FFFFFF</color>
+
+    <color name="background_geobiz">#F8F9FF</color>
+    <color name="surface_geobiz">#FFFFFF</color>
+    <color name="on_surface_geobiz">#1C1B1F</color>
+
+    <!-- Acentos y controles del mapa -->
+    <color name="accent_geobiz">#54ACBF</color>
+    <color name="surface_variant_geobiz">#E8EEF4</color>
+    <color name="map_control_bg">#FFFFFF</color>
+    <color name="map_control_icon">#26658C</color>
+    <color name="fab_primary">#1A237E</color>
+    <color name="map_zone_stroke">#26658C</color>
+    <color name="map_zone_fill">#1A26658C</color>
+
+    <!-- Semáforo de riesgo simulador -->
+    <color name="risk_low">#4CAF50</color>
+    <color name="risk_medium">#FFC107</color>
+    <color name="risk_high">#F44336</color>
+
+    <!-- Barra de navegación -->
+    <color name="nav_bar_background">#FFFFFF</color>
+    <color name="nav_bar_icon">#5C5C5C</color>
+    <color name="nav_bar_icon_selected">#26658C</color>
+    <color name="nav_bar_selected_circle">#E8EEF4</color>
+</resources>

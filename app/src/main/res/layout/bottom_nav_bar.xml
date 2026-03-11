@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_bar_container"
+    android:layout_width="match_parent"
+    android:layout_height="42dp"
+    android:background="@drawable/bg_nav_bar"
+    android:elevation="0dp"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:paddingHorizontal="4dp"
+    android:paddingVertical="4dp">
+
+    <!-- Inicio (centro) -->
+    <FrameLayout
+        android:id="@+id/nav_inicio"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:clickable="true"
+        android:focusable="true"
+        android:clipChildren="false"
+        android:clipToPadding="false">
+        <View
+            android:id="@+id/nav_inicio_selected_bg"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_nav_item_selected"
+            android:elevation="0dp"
+            android:visibility="visible" />
+        <ImageView
+            android:id="@+id/nav_icon_inicio"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_gravity="center"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_nav_home"
+            android:scaleType="centerInside" android:elevation="0dp" />
+    </FrameLayout>
+
+    <!-- Mapa -->
+    <FrameLayout
+        android:id="@+id/nav_mapa"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:clickable="true"
+        android:focusable="true"
+        android:clipChildren="false"
+        android:clipToPadding="false">
+        <View
+            android:id="@+id/nav_mapa_selected_bg"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_nav_item_selected"
+            android:elevation="0dp"
+            android:visibility="gone" />
+        <ImageView
+            android:id="@+id/nav_icon_mapa"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_gravity="center"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_nav_map"
+            android:scaleType="centerInside" android:elevation="0dp" />
+    </FrameLayout>
+
+    <!-- Análisis -->
+    <FrameLayout
+        android:id="@+id/nav_analisis"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:clickable="true"
+        android:focusable="true"
+        android:clipChildren="false"
+        android:clipToPadding="false">
+        <View
+            android:id="@+id/nav_analisis_selected_bg"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_nav_item_selected"
+            android:elevation="0dp"
+            android:visibility="gone" />
+        <ImageView
+            android:id="@+id/nav_icon_analisis"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_gravity="center"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_nav_pie"
+            android:scaleType="centerInside" android:elevation="0dp" />
+    </FrameLayout>
+
+    <!-- Simulador -->
+    <FrameLayout
+        android:id="@+id/nav_simulador"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:clickable="true"
+        android:focusable="true"
+        android:clipChildren="false"
+        android:clipToPadding="false">
+        <View
+            android:id="@+id/nav_simulador_selected_bg"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_nav_item_selected"
+            android:elevation="0dp"
+            android:visibility="gone" />
+        <ImageView
+            android:id="@+id/nav_icon_simulador"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_gravity="center"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_nav_simulator"
+            android:scaleType="centerInside" android:elevation="0dp" />
+    </FrameLayout>
+
+ </LinearLayout>

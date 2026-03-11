@@ -1,0 +1,76 @@
+{
+  "negocios": [
+    {
+      "tipo": "Restaurante",
+      "pesos": {
+        "w1_peatonal": 0.30,
+        "w2_vehicular": 0.10,
+        "w3_competencia": 0.20,
+        "w4_nse": 0.15,
+        "w5_seguridad": 0.10,
+        "w6_densidad": 0.10,
+        "w7_renta": 0.05
+      }
+    },
+    {
+      "tipo": "Cafetería",
+      "pesos": {
+        "w1_peatonal": 0.40,
+        "w2_vehicular": 0.05,
+        "w3_competencia": 0.15,
+        "w4_nse": 0.20,
+        "w5_seguridad": 0.10,
+        "w6_densidad": 0.05,
+        "w7_renta": 0.05
+      }
+    },
+    {
+      "tipo": "Farmacia",
+      "pesos": {
+        "w1_peatonal": 0.15,
+        "w2_vehicular": 0.30,
+        "w3_competencia": 0.20,
+        "w4_nse": 0.10,
+        "w5_seguridad": 0.10,
+        "w6_densidad": 0.10,
+        "w7_renta": 0.05
+      }
+    },
+    {
+      "tipo": "Autos",
+      "pesos": {
+        "w1_peatonal": 0.05,
+        "w2_vehicular": 0.25,
+        "w3_competencia": 0.10,
+        "w4_nse": 0.25,
+        "w5_seguridad": 0.20,
+        "w6_densidad": 0.10,
+        "w7_renta": 0.05
+      }
+    },
+    {
+      "tipo": "Papelería",
+      "pesos": {
+        "w1_peatonal": 0.20,
+        "w2_vehicular": 0.05,
+        "w3_competencia": 0.10,
+        "w4_nse": 0.05,
+        "w5_seguridad": 0.10,
+        "w6_densidad": 0.45,
+        "w7_renta": 0.05
+      }
+    },
+    {
+      "tipo": "Floreria",
+      "pesos": {
+        "w1_peatonal": 0.25,
+        "w2_vehicular": 0.15,
+        "w3_competencia": 0.15,
+        "w4_nse": 0.05,
+        "w5_seguridad": 0.10,
+        "w6_densidad": 0.25,
+        "w7_renta": 0.05
+      }
+    }
+  ]
+}

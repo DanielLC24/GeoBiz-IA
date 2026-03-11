@@ -1,0 +1,579 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/background_geobiz">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <!-- Título -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Simulador de negocio"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="@color/primary_geobiz" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Explora la viabilidad financiera de tu giro en la zona BUAP."
+            android:textSize="13sp"
+            android:textColor="@color/on_surface_geobiz" />
+
+        <!-- Selección de giro (grid de iconos) -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Selecciona tu giro"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:textColor="@color/on_surface_geobiz" />
+
+        <androidx.gridlayout.widget.GridLayout
+            android:id="@+id/grid_categories"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:columnCount="3"
+            app:rowCount="3"
+            app:useDefaultMargins="true">
+
+            <!-- Restaurante -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_restaurante"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/surface_geobiz"
+                app:strokeWidth="0dp"
+                app:layout_columnWeight="1"
+                android:clickable="true"
+                android:focusable="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingVertical="14dp"
+                    android:paddingHorizontal="8dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_restaurant"
+                        android:contentDescription="@null" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Restaurante"
+                        android:textSize="12sp"
+                        android:textColor="@color/on_surface_geobiz" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Cafetería -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_cafeteria"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/surface_geobiz"
+                app:strokeWidth="0dp"
+                app:layout_columnWeight="1"
+                android:clickable="true"
+                android:focusable="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingVertical="14dp"
+                    android:paddingHorizontal="8dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_cafe"
+                        android:contentDescription="@null" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Cafetería"
+                        android:textSize="12sp"
+                        android:textColor="@color/on_surface_geobiz" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Taller autos -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_taller"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/surface_geobiz"
+                app:strokeWidth="0dp"
+                app:layout_columnWeight="1"
+                android:clickable="true"
+                android:focusable="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingVertical="14dp"
+                    android:paddingHorizontal="8dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_car_repair"
+                        android:contentDescription="@null" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Taller autos"
+                        android:textSize="12sp"
+                        android:textColor="@color/on_surface_geobiz" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Farmacia -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_farmacia"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/surface_geobiz"
+                app:strokeWidth="0dp"
+                app:layout_columnWeight="1"
+                android:clickable="true"
+                android:focusable="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingVertical="14dp"
+                    android:paddingHorizontal="8dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_pharmacy"
+                        android:contentDescription="@null" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Farmacia"
+                        android:textSize="12sp"
+                        android:textColor="@color/on_surface_geobiz" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Papelería -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_papeleria"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/surface_geobiz"
+                app:strokeWidth="0dp"
+                app:layout_columnWeight="1"
+                android:clickable="true"
+                android:focusable="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingVertical="14dp"
+                    android:paddingHorizontal="8dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_stationery"
+                        android:contentDescription="@null" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Papelería"
+                        android:textSize="12sp"
+                        android:textColor="@color/on_surface_geobiz" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Florería -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_floreria"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/surface_geobiz"
+                app:strokeWidth="0dp"
+                app:layout_columnWeight="1"
+                android:clickable="true"
+                android:focusable="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingVertical="14dp"
+                    android:paddingHorizontal="8dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_flower"
+                        android:contentDescription="@null" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Florería"
+                        android:textSize="12sp"
+                        android:textColor="@color/on_surface_geobiz" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Personalizado -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_personalizado"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/surface_geobiz"
+                app:strokeWidth="0dp"
+                app:layout_columnWeight="1"
+                android:clickable="true"
+                android:focusable="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingVertical="14dp"
+                    android:paddingHorizontal="8dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_custom_business"
+                        android:contentDescription="@null" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Personalizado"
+                        android:textSize="12sp"
+                        android:textColor="@color/on_surface_geobiz" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </androidx.gridlayout.widget.GridLayout>
+
+        <!-- Panel de parámetros financieros -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_inputs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/surface_geobiz">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Parámetros financieros"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:textColor="@color/on_surface_geobiz" />
+
+                <!-- Renta mensual -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Renta mensual (MXN)"
+                    android:textSize="12sp"
+                    android:textColor="@color/on_surface_geobiz" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    app:boxBackgroundMode="outline">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editRentaMensual"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
+                        android:hint="$ 20,000"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Inversión inicial -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Inversión inicial (MXN)"
+                    android:textSize="12sp"
+                    android:textColor="@color/on_surface_geobiz" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    app:boxBackgroundMode="outline">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editInversionInicial"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
+                        android:hint="$ 250,000"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Ticket promedio -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Ticket promedio (MXN)"
+                    android:textSize="12sp"
+                    android:textColor="@color/on_surface_geobiz" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    app:boxBackgroundMode="outline">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editTicketPromedio"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
+                        android:hint="$ 120"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Margen promedio -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Margen promedio (%)"
+                    android:textSize="12sp"
+                    android:textColor="@color/on_surface_geobiz" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    app:boxBackgroundMode="outline">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editMargenPromedio"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
+                        android:hint="35"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Ventas estimadas -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Ventas estimadas (clientes/mes)"
+                    android:textSize="12sp"
+                    android:textColor="@color/on_surface_geobiz" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    app:boxBackgroundMode="outline">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editVentasEstimadas"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:hint="600"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Botón ajustes avanzados (solo personalizado) -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAjustesAvanzados"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Ajustes avanzados"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Botón principal Calcular ROI -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCalcularRoi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Calcular ROI"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:paddingVertical="12dp"
+            app:cornerRadius="16dp"
+            app:backgroundTint="@color/fab_primary" />
+
+        <!-- Resultados -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_results"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="12dp"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/surface_geobiz">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/textRoiPorcentaje"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ROI estimado —"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/primary_geobiz" />
+
+                <TextView
+                    android:id="@+id/textRoiDetalle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Completa los parámetros para ver el retorno estimado."
+                    android:textSize="13sp"
+                    android:textColor="@color/on_surface_geobiz" />
+
+                <!-- Semáforo de riesgo -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="Nivel de riesgo"
+                    android:textSize="12sp"
+                    android:textColor="@color/on_surface_geobiz" />
+
+                <View
+                    android:id="@+id/viewRiesgo"
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:layout_marginTop="6dp"
+                    android:background="@color/surface_variant_geobiz" />
+
+                <!-- Comparativa de mercado -->
+                <TextView
+                    android:id="@+id/textComparativaMercado"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="La renta ingresada se comparará con el promedio de la zona BUAP."
+                    android:textSize="12sp"
+                    android:textColor="@color/on_surface_geobiz" />
+
+                <!-- Dashboard financiero resumido -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Dashboard financiero"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/on_surface_geobiz" />
+
+                <TextView
+                    android:id="@+id/textIngresosMensuales"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Ingresos mensuales estimados: —"
+                    android:textSize="12sp"
+                    android:textColor="@color/on_surface_geobiz" />
+
+                <TextView
+                    android:id="@+id/textPuntoEquilibrio"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="Punto de equilibrio: —"
+                    android:textSize="12sp"
+                    android:textColor="@color/on_surface_geobiz" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+</ScrollView>

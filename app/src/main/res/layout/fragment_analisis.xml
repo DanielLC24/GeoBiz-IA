@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/background_geobiz">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <!-- Encabezado -->
+        <TextView
+            android:id="@+id/textTituloAnalisis"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Análisis GeoBiz"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="@color/primary_geobiz" />
+
+        <TextView
+            android:id="@+id/textDescripcionAnalisis"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Resumen multicriterio de la ubicación seleccionada."
+            android:textSize="13sp"
+            android:textColor="@color/on_surface_geobiz" />
+
+        <!-- Resumen de score -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_score"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/surface_geobiz">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/textScorePorcentaje"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Score GeoBiz —"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/primary_geobiz" />
+
+                <TextView
+                    android:id="@+id/textScoreInterpretacion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Selecciona un punto en el mapa y un giro para ver el análisis."
+                    android:textSize="13sp"
+                    android:textColor="@color/on_surface_geobiz" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Semáforo de viabilidad"
+                    android:textSize="12sp"
+                    android:textColor="@color/on_surface_geobiz" />
+
+                <View
+                    android:id="@+id/viewSemaforoScore"
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:layout_marginTop="6dp"
+                    android:background="@color/surface_variant_geobiz" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- RadarChart con las 7 variables -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_radar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/surface_geobiz">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Perfil de la ubicación"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/on_surface_geobiz" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Se grafican: Peatonal, Vehicular, Competencia, NSE, Seguridad, Densidad y Renta."
+                    android:textSize="12sp"
+                    android:textColor="@color/on_surface_geobiz" />
+
+                <com.github.mikephil.charting.charts.RadarChart
+                    android:id="@+id/radarChartGeoBiz"
+                    android:layout_width="match_parent"
+                    android:layout_height="260dp"
+                    android:layout_marginTop="12dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- FODA automático -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_foda"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="12dp"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/surface_geobiz">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Análisis FODA automático"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/on_surface_geobiz" />
+
+                <!-- Fortalezas -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Fortalezas"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/primary_geobiz" />
+
+                <TextView
+                    android:id="@+id/textFortalezas"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="Se mostrarán aquí las variables con valor &gt; 70."
+                    android:textSize="12sp"
+                    android:textColor="@color/on_surface_geobiz" />
+
+                <!-- Amenazas -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Amenazas"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/risk_high" />
+
+                <TextView
+                    android:id="@+id/textAmenazas"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="Variables con valor &lt; 40 o competencia muy alta aparecerán aquí."
+                    android:textSize="12sp"
+                    android:textColor="@color/on_surface_geobiz" />
+
+                <!-- Oportunidades -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Oportunidades"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/risk_low" />
+
+                <TextView
+                    android:id="@+id/textOportunidades"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="Se resaltarán zonas con alto NSE y baja competencia."
+                    android:textSize="12sp"
+                    android:textColor="@color/on_surface_geobiz" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+</ScrollView>
