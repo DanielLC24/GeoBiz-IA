@@ -1,5 +1,8 @@
 package com.example.negocio
-
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
@@ -26,6 +29,7 @@ import org.osmdroid.views.overlay.Polygon
 import org.osmdroid.views.overlay.infowindow.BasicInfoWindow
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
+
 
 class MapFragment : Fragment() {
 
@@ -69,7 +73,7 @@ class MapFragment : Fragment() {
             override fun longPressHelper(p: GeoPoint): Boolean {
                 analysisCenter = p
                 dibujarCirculo(p, radioMetros)
-                mapView.overlays.removeAll { it is Marker && it !is MyLocationNewOverlay } // Limpia marcadores existentes
+                mapView.overlays.removeAll { it is Marker && it !is MyLocationNewOverlay }
                 mapView.invalidate()
                 Toast.makeText(requireContext(), "Nueva área de análisis definida", Toast.LENGTH_SHORT).show()
                 return true
@@ -159,84 +163,80 @@ class MapFragment : Fragment() {
             return
         }
 
-        val puntosCompetencia = mutableListOf<GeoPoint>()
-        try {
-            val overlaysToRemove = mapView.overlays.filterIsInstance<Marker>().filter { it !is MyLocationNewOverlay }
-            mapView.overlays.removeAll(overlaysToRemove)
+        val overlaysToRemove = mapView.overlays.filterIsInstance<Marker>()
+            .filter { it !is MyLocationNewOverlay }
+        mapView.overlays.removeAll(overlaysToRemove)
+        mapView.invalidate()
 
-            val inputStream = requireContext().assets.open("datos_fcc.csv")
-            val reader = inputStream.bufferedReader(Charsets.ISO_8859_1)
+        Toast.makeText(requireContext(), "Analizando zona con IA...", Toast.LENGTH_SHORT).show()
 
-            reader.readLines().forEach { linea ->
-                val columnas = linea.split(",")
-                if (columnas.size >= 4) {
-                    val actividad = columnas[1].trim()
-                    val shouldInclude = if (tipoSeleccionado.equals("Restaurante", ignoreCase = true)) {
-                        actividad.startsWith("Restaurante", ignoreCase = true)
-                    } else {
-                        actividad.contains(tipoSeleccionado, ignoreCase = true)
-                    }
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitClient.api.predecir(
+                    lat   = currentAnalysisCenter.latitude,
+                    lng   = currentAnalysisCenter.longitude,
+                    radio = radioMetros.toInt()
+                )
 
-                    if (shouldInclude) {
-                        try {
-                            val lat = columnas[2].toDouble()
-                            val lon = columnas[3].toDouble()
-                            val nombre = columnas[0]
-                            val posicion = GeoPoint(lat, lon)
-                            if (posicion.distanceToAsDouble(currentAnalysisCenter) <= radioMetros) {
-                                puntosCompetencia.add(posicion)
-                                val marker = Marker(mapView).apply {
-                                    this.position = posicion
-                                    this.title = nombre
-                                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                                    infoWindow = BasicInfoWindow(org.osmdroid.library.R.layout.bonuspack_bubble, mapView)
-                                    setOnMarkerClickListener { m, mv ->
-                                        mv.overlays.filterIsInstance<Marker>().forEach { otherMarker ->
-                                            if (otherMarker != m && otherMarker.isInfoWindowShown) {
-                                                otherMarker.closeInfoWindow()
-                                            }
-                                        }
-                                        if (m.isInfoWindowShown) {
-                                            m.closeInfoWindow()
-                                        } else {
-                                            m.showInfoWindow()
-                                        }
-                                        true
-                                    }
-                                }
-                                mapView.overlays.add(marker)
+                if (response.isSuccessful) {
+                    val resultado = response.body()!!
+
+                    withContext(Dispatchers.Main) {
+                        val marker = Marker(mapView).apply {
+                            position = currentAnalysisCenter
+                            title    = resultado.recomendacion[0]      // ← [0]
+                            snippet  = buildString {
+                                append("Score: ${resultado.score_final[0]}/100\n")  // ← [0]
+                                append("─────────────────\n")
+                                append("📊 Tráfico\n")
+                                append("  Cafés: ${resultado.osm.cafes[0]}\n")
+                                append("  Bares: ${resultado.osm.bares[0]}\n")
+                                append("  Bus:   ${resultado.osm.paradas_bus[0]}\n")
+                                append("─────────────────\n")
+                                append("🏪 Competencia\n")
+                                append("  Restaurantes: ${resultado.osm.restaurantes[0]}\n")
+                                append("  Directa:      ${resultado.osm.competencia_directa[0]}\n")
+                                append("─────────────────\n")
+                                append("👥 Socioec. INEGI\n")
+                                append("  Internet: ${resultado.inegi.pct_internet[0]}%\n")
+                                append("  Escolaridad: ${resultado.inegi.pct_posbas[0]}%\n")
                             }
-                        } catch (e: NumberFormatException) {
-                            // Omitir líneas con formato de lat/lon incorrecto
+                            setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                            infoWindow = CustomMarkerInfoWindow(mapView)
                         }
+                        mapView.overlays.add(marker)
+                        marker.showInfoWindow()
+                        mapView.invalidate()
+
+                        Toast.makeText(
+                            requireContext(),
+                            "${resultado.recomendacion[0]} — Score: ${resultado.score_final[0]}/100",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(requireContext(), "Error del servidor: ${response.code()}", Toast.LENGTH_LONG).show()
                     }
                 }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    android.util.Log.e("API_ERROR", "Error: ${e.javaClass.name}: ${e.message}", e)
+                    Toast.makeText(requireContext(), "Error: ${e.javaClass.simpleName}: ${e.message}", Toast.LENGTH_LONG).show()
+                }
             }
-
-            if (puntosCompetencia.isNotEmpty()) {
-                mapView.invalidate()
-                Toast.makeText(requireContext(), "Análisis de densidad completado", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(requireContext(), "No hay competencia de $tipoSeleccionado en la zona seleccionada", Toast.LENGTH_LONG).show()
-            }
-        } catch (e: Exception) {
-            Toast.makeText(requireContext(), "Error con el archivo: ${e.message}", Toast.LENGTH_LONG).show()
         }
     }
 
     override fun onResume() {
         super.onResume()
         mapView.onResume()
-        if (::locationOverlay.isInitialized) {
-            locationOverlay.enableMyLocation()
-        }
+        if (::locationOverlay.isInitialized) locationOverlay.enableMyLocation()
     }
 
     override fun onPause() {
         super.onPause()
         mapView.onPause()
-        if (::locationOverlay.isInitialized) {
-            locationOverlay.disableMyLocation()
-        }
+        if (::locationOverlay.isInitialized) locationOverlay.disableMyLocation()
     }
 }
