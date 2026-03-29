@@ -30,7 +30,6 @@ import org.osmdroid.views.overlay.infowindow.BasicInfoWindow
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
-
 class MapFragment : Fragment() {
 
     private lateinit var mapView: MapView
@@ -156,6 +155,13 @@ class MapFragment : Fragment() {
         mapView.invalidate()
     }
 
+    // ── Icono de color para marcadores de competencia ─────────────
+    private fun createColoredMarkerIcon(color: Int): android.graphics.drawable.Drawable {
+        val drawable = ContextCompat.getDrawable(requireContext(), R.drawable.ic_custom_marker)!!.mutate()
+        drawable.setTint(color)
+        return drawable
+    }
+
     private fun ejecutarLogicaIA(tipoSeleccionado: String) {
         val currentAnalysisCenter = analysisCenter
         if (currentAnalysisCenter == null) {
@@ -170,34 +176,89 @@ class MapFragment : Fragment() {
 
         Toast.makeText(requireContext(), "Analizando zona con IA...", Toast.LENGTH_SHORT).show()
 
+        // ── Mapeo tipo negocio → tipos OSM a marcar ───────────────
+        val tiposOSM = when (tipoSeleccionado.lowercase()) {
+            "restaurante"  -> listOf("restaurant", "fast_food", "food_court")
+            "cafeteria"    -> listOf("cafe", "bar")
+            "taller autos" -> listOf("fuel")
+            "farmacia"     -> listOf("pharmacy")
+            "papeleria"    -> listOf("shop")
+            "floreria"     -> listOf("marketplace")
+            else           -> listOf("restaurant")
+        }
+
+        // ── Colores por tipo ──────────────────────────────────────
+        val colorPorTipo = mapOf(
+            "restaurant"  to 0xFFE74C3C.toInt(),
+            "fast_food"   to 0xFFE67E22.toInt(),
+            "food_court"  to 0xFFE67E22.toInt(),
+            "cafe"        to 0xFF8E44AD.toInt(),
+            "bar"         to 0xFF2980B9.toInt(),
+            "pharmacy"    to 0xFF27AE60.toInt(),
+            "fuel"        to 0xFF7F8C8D.toInt(),
+            "marketplace" to 0xFFF39C12.toInt(),
+            "shop"        to 0xFF16A085.toInt()
+        )
+
         lifecycleScope.launch {
             try {
-                val response = RetrofitClient.api.predecir(
+                // ── 1. Score principal ────────────────────────────
+                val responseScore = RetrofitClient.getApi(requireContext()).predecir(
                     lat   = currentAnalysisCenter.latitude,
                     lng   = currentAnalysisCenter.longitude,
                     radio = radioMetros.toInt()
                 )
 
-                if (response.isSuccessful) {
-                    val resultado = response.body()!!
+                // ── 2. Lugares cercanos por tipo ──────────────────
+                tiposOSM.forEach { tipoOSM ->
+                    val responseLugares = RetrofitClient.getApi(requireContext()).getLugaresCercanos(
+                        lat   = currentAnalysisCenter.latitude,
+                        lng   = currentAnalysisCenter.longitude,
+                        tipo  = tipoOSM,
+                        radio = radioMetros.toInt()
+                    )
 
+                    if (responseLugares.isSuccessful) {
+                        val lugares = responseLugares.body()?.lugares ?: emptyList()
+                        val color   = colorPorTipo[tipoOSM] ?: 0xFF95A5A6.toInt()
+
+                        withContext(Dispatchers.Main) {
+                            lugares.forEach { lugar ->
+                                val marcador = Marker(mapView).apply {
+                                    position = GeoPoint(lugar.lat[0], lugar.lng[0])
+                                    title    = lugar.tipo[0].replaceFirstChar { it.uppercase() }
+                                    snippet  = "Tipo: ${lugar.tipo[0]}"
+                                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                                    icon     = createColoredMarkerIcon(color)
+                                    infoWindow = CustomMarkerInfoWindow(mapView)
+                                }
+                                mapView.overlays.add(marcador)
+                            }
+                            mapView.invalidate()
+                        }
+                    }
+                }
+
+                // ── 3. Marcador principal con score ───────────────
+                if (responseScore.isSuccessful) {
+                    val resultado = responseScore.body()!!
                     withContext(Dispatchers.Main) {
                         val marker = Marker(mapView).apply {
                             position = currentAnalysisCenter
-                            title    = resultado.recomendacion[0]      // ← [0]
+                            title    = resultado.recomendacion[0]
                             snippet  = buildString {
-                                append("Score: ${resultado.score_final[0]}/100\n")  // ← [0]
+                                append("Score: ${resultado.score_final[0]}/100\n")
                                 append("─────────────────\n")
-                                append("📊 Tráfico\n")
+                                append("Tráfico\n")
                                 append("  Cafés: ${resultado.osm.cafes[0]}\n")
                                 append("  Bares: ${resultado.osm.bares[0]}\n")
                                 append("  Bus:   ${resultado.osm.paradas_bus[0]}\n")
                                 append("─────────────────\n")
-                                append("🏪 Competencia\n")
+                                append("Competencia\n")
                                 append("  Restaurantes: ${resultado.osm.restaurantes[0]}\n")
                                 append("  Directa:      ${resultado.osm.competencia_directa[0]}\n")
                                 append("─────────────────\n")
-                                append("👥 Socioec. INEGI\n")
+                                append("Socioec. INEGI\n")
                                 append("  Internet: ${resultado.inegi.pct_internet[0]}%\n")
                                 append("  Escolaridad: ${resultado.inegi.pct_posbas[0]}%\n")
                             }
@@ -214,11 +275,8 @@ class MapFragment : Fragment() {
                             Toast.LENGTH_LONG
                         ).show()
                     }
-                } else {
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(requireContext(), "Error del servidor: ${response.code()}", Toast.LENGTH_LONG).show()
-                    }
                 }
+
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     android.util.Log.e("API_ERROR", "Error: ${e.javaClass.name}: ${e.message}", e)

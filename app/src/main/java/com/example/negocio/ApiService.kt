@@ -44,6 +44,18 @@ data class PingResponse(
     val mensaje: List<String>
 )
 
+// ── Modelos para lugares cercanos ─────────────────────────────────
+data class LugarCercano(
+    val lat: List<Double>,
+    val lng: List<Double>,
+    val tipo: List<String>
+)
+
+data class LugaresCercanosResponse(
+    val total: List<Int>,
+    val lugares: List<LugarCercano>
+)
+
 // ── Interface de la API ───────────────────────────────────────────
 interface ApiService {
 
@@ -57,18 +69,29 @@ interface ApiService {
         @Field("lng")   lng: Double,
         @Field("radio") radio: Int = 1000
     ): Response<PrediccionResponse>
+
+    @FormUrlEncoded
+    @POST("lugares_cercanos")
+    suspend fun getLugaresCercanos(
+        @Field("lat")   lat: Double,
+        @Field("lng")   lng: Double,
+        @Field("tipo")  tipo: String,
+        @Field("radio") radio: Int = 1000
+    ): Response<LugaresCercanosResponse>
 }
 
 // ── Cliente Retrofit ──────────────────────────────────────────────
 object RetrofitClient {
 
-    // Cambia esta IP por la de tu computadora en la red local
-    // Para saber tu IP: en Windows → cmd → ipconfig → IPv4
-    private const val BASE_URL = "http://192.168.100.17:8000/"
+    private var _api: ApiService? = null
 
-    val api: ApiService by lazy {
-        Retrofit.Builder()
-            .baseUrl(BASE_URL)
+    fun getApi(context: android.content.Context): ApiService {
+        val prefs = context.getSharedPreferences("geobiz_config", android.content.Context.MODE_PRIVATE)
+        val ip = prefs.getString("server_ip", "192.168.100.17") ?: "192.168.100.17"
+        val baseUrl = "http://$ip:8000/"
+
+        return Retrofit.Builder()
+            .baseUrl(baseUrl)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(ApiService::class.java)
