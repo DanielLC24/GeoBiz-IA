@@ -255,7 +255,7 @@ class MapFragment : Fragment() {
                         val marker = Marker(mapView).apply {
                             position = currentAnalysisCenter
                             title    = resultado.recomendacion[0]
-                            snippet  = buildString {
+                            snippet = buildString {
                                 append("Score: ${resultado.score_final[0]}/100\n")
                                 append("─────────────────\n")
                                 append("Tráfico\n")
@@ -268,8 +268,7 @@ class MapFragment : Fragment() {
                                 append("  Directa:      ${resultado.osm.competencia_directa[0]}\n")
                                 append("─────────────────\n")
                                 append("Socioec. INEGI\n")
-                                append("  Internet: ${resultado.inegi.pct_internet[0]}%\n")
-                                append("  Escolaridad: ${resultado.inegi.pct_posbas[0]}%\n")
+                                append("  Índice: ${resultado.inegi.indice_socio[0]}\n")
                             }
                             setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                             infoWindow = CustomMarkerInfoWindow(mapView)

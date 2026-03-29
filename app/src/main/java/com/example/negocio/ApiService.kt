@@ -8,11 +8,8 @@ import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
 import retrofit2.http.GET
 
-// ── Modelos de respuesta ──────────────────────────────────────────
 data class IneigiData(
     val pob_adulta: List<Int>,
-    val pct_internet: List<Double>,
-    val pct_posbas: List<Double>,
     val indice_socio: List<Double>
 )
 
@@ -28,9 +25,9 @@ data class OsmData(
 )
 
 data class PrediccionResponse(
+    val negocio_tipo: List<String>,
     val lat: List<Double>,
     val lng: List<Double>,
-    val radio_metros: List<Int>,
     val score_final: List<Double>,
     val score_osm: List<Double>,
     val score_inegi: List<Double>,
@@ -44,7 +41,6 @@ data class PingResponse(
     val mensaje: List<String>
 )
 
-// ── Modelos para lugares cercanos ─────────────────────────────────
 data class LugarCercano(
     val lat: List<Double>,
     val lng: List<Double>,
@@ -56,7 +52,6 @@ data class LugaresCercanosResponse(
     val lugares: List<LugarCercano>
 )
 
-// ── Interface de la API ───────────────────────────────────────────
 interface ApiService {
 
     @GET("ping")
@@ -81,10 +76,7 @@ interface ApiService {
     ): Response<LugaresCercanosResponse>
 }
 
-// ── Cliente Retrofit ──────────────────────────────────────────────
 object RetrofitClient {
-
-    private var _api: ApiService? = null
 
     fun getApi(context: android.content.Context): ApiService {
         val prefs = context.getSharedPreferences("geobiz_config", android.content.Context.MODE_PRIVATE)
