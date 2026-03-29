@@ -130,6 +130,10 @@ class MapFragment : Fragment() {
         }
 
         val dismiss = { popupWindow.dismiss() }
+
+        // --- NUEVO: Botón de cerrar ---
+        popupView.findViewById<View>(R.id.btn_close_popup).setOnClickListener { dismiss() }
+
         popupView.findViewById<View>(R.id.option_one).setOnClickListener { ejecutarLogicaIA("Restaurante"); dismiss() }
         popupView.findViewById<View>(R.id.option_two).setOnClickListener { ejecutarLogicaIA("Cafeteria"); dismiss() }
         popupView.findViewById<View>(R.id.option_three).setOnClickListener { ejecutarLogicaIA("Taller autos"); dismiss() }

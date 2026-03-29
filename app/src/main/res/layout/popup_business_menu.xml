@@ -10,7 +10,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:maxHeight="360dp"
+        android:maxHeight="420dp"
         android:fillViewport="true">
 
         <LinearLayout
@@ -19,14 +19,32 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Tipo de negocio"
-                android:textSize="17sp"
-                android:textStyle="bold"
-                android:textColor="@color/primary_geobiz"
-                android:layout_marginBottom="12dp" />
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="Tipo de negocio"
+                    android:textColor="@color/primary_geobiz"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/btn_close_popup"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_alignParentEnd="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="4dp"
+                    android:src="@android:drawable/ic_menu_close_clear_cancel"
+                    app:tint="@color/secondary_geobiz" />
+            </RelativeLayout>
 
             <LinearLayout
                 android:id="@+id/option_one"
