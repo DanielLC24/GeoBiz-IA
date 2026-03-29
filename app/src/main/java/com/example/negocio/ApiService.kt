@@ -67,6 +67,7 @@ interface ApiService {
     suspend fun predecir(
         @Field("lat")   lat: Double,
         @Field("lng")   lng: Double,
+        @Field("tipo")  tipo: String,
         @Field("radio") radio: Int = 1000
     ): Response<PrediccionResponse>
 
@@ -87,7 +88,7 @@ object RetrofitClient {
 
     fun getApi(context: android.content.Context): ApiService {
         val prefs = context.getSharedPreferences("geobiz_config", android.content.Context.MODE_PRIVATE)
-        val ip = prefs.getString("server_ip", "192.168.100.17") ?: "192.168.100.17"
+        val ip = prefs.getString("server_ip", "localhost") ?: "localhost"
         val baseUrl = "http://$ip:8000/"
 
         return Retrofit.Builder()

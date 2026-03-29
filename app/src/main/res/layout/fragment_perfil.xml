@@ -133,7 +133,7 @@
                     android:id="@+id/edit_server_ip"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="192.168.X.X"
+                    android:hint="localhost o 192.168.X.X"
                     android:inputType="text"
                     android:textSize="14sp" />
 

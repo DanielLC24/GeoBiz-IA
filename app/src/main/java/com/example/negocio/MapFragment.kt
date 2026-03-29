@@ -176,6 +176,10 @@ class MapFragment : Fragment() {
 
         Toast.makeText(requireContext(), "Analizando zona con IA...", Toast.LENGTH_SHORT).show()
 
+        // ── Obtener tipo para la API usando el Enum ───────────────
+        val businessType = BusinessType.fromLabel(tipoSeleccionado)
+        val tipoParaApi = businessType?.jsonKey ?: tipoSeleccionado
+
         // ── Mapeo tipo negocio → tipos OSM a marcar ───────────────
         val tiposOSM = when (tipoSeleccionado.lowercase()) {
             "restaurante"  -> listOf("restaurant", "fast_food", "food_court")
@@ -206,6 +210,7 @@ class MapFragment : Fragment() {
                 val responseScore = RetrofitClient.getApi(requireContext()).predecir(
                     lat   = currentAnalysisCenter.latitude,
                     lng   = currentAnalysisCenter.longitude,
+                    tipo  = tipoParaApi,
                     radio = radioMetros.toInt()
                 )
 
