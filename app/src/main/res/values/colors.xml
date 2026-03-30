@@ -7,33 +7,44 @@
     <color name="blue_dark">#023859</color>
     <color name="blue_navy">#011C40</color>
 
-    <color name="primary_geobiz">#26658C</color>
+    <color name="primary_geobiz">#00BFA5</color>
     <color name="on_primary_geobiz">#FFFFFF</color>
 
-    <color name="secondary_geobiz">#54ACBF</color>
+    <color name="secondary_geobiz">#26C6DA</color>
     <color name="on_secondary_geobiz">#FFFFFF</color>
 
-    <color name="background_geobiz">#F8F9FF</color>
+    <color name="background_geobiz">#F5F9FA</color>
     <color name="surface_geobiz">#FFFFFF</color>
-    <color name="on_surface_geobiz">#1C1B1F</color>
+    <color name="on_surface_geobiz">#202124</color>
+    <color name="on_surface_variant_geobiz">#70757A</color>
 
     <!-- Acentos y controles del mapa -->
-    <color name="accent_geobiz">#54ACBF</color>
-    <color name="surface_variant_geobiz">#E8EEF4</color>
+    <color name="accent_geobiz">#00BFA5</color>
+    <color name="surface_variant_geobiz">#E0F2F1</color>
     <color name="map_control_bg">#FFFFFF</color>
-    <color name="map_control_icon">#26658C</color>
-    <color name="fab_primary">#1A237E</color>
-    <color name="map_zone_stroke">#26658C</color>
-    <color name="map_zone_fill">#1A26658C</color>
+    <color name="map_control_icon">#00BFA5</color>
+    <color name="fab_primary">#00BFA5</color>
+    <color name="map_zone_stroke">#00BFA5</color>
+    <color name="map_zone_fill">#1A00BFA5</color>
 
     <!-- Semáforo de riesgo simulador -->
-    <color name="risk_low">#4CAF50</color>
-    <color name="risk_medium">#FFC107</color>
-    <color name="risk_high">#F44336</color>
+    <color name="risk_low">#00BFA5</color>
+    <color name="risk_medium">#FFB74D</color>
+    <color name="risk_high">#FF7043</color>
+
+    <!-- FODA Colors -->
+    <color name="foda_fortaleza_bg">#E0F2F1</color>
+    <color name="foda_fortaleza_icon">#00BFA5</color>
+    <color name="foda_oportunidad_bg">#E0F7FA</color>
+    <color name="foda_oportunidad_icon">#0097A7</color>
+    <color name="foda_debilidad_bg">#FBE9E7</color>
+    <color name="foda_debilidad_icon">#FF7043</color>
+    <color name="foda_amenaza_bg">#FFF3E0</color>
+    <color name="foda_amenaza_icon">#FFB74D</color>
 
     <!-- Barra de navegación -->
     <color name="nav_bar_background">#FFFFFF</color>
     <color name="nav_bar_icon">#5C5C5C</color>
-    <color name="nav_bar_icon_selected">#26658C</color>
-    <color name="nav_bar_selected_circle">#E8EEF4</color>
+    <color name="nav_bar_icon_selected">#00BFA5</color>
+    <color name="nav_bar_selected_circle">#E0F2F1</color>
 </resources>

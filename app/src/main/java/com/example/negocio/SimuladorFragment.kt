@@ -5,6 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import android.widget.SeekBar
+import android.widget.TextView
+import android.widget.ImageView
+import android.animation.ObjectAnimator
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.button.MaterialButton
@@ -33,84 +37,180 @@ class SimuladorFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val cardInputs = view.findViewById<MaterialCardView>(R.id.card_inputs)
-        val btnCalcular = view.findViewById<MaterialButton>(R.id.btnCalcularRoi)
-        val btnAjustesAvanzados = view.findViewById<MaterialButton>(R.id.btnAjustesAvanzados)
+        // Toolbar acciones
+        view.findViewById<ImageView?>(R.id.btnBackSim)?.setOnClickListener {
+            activity?.onBackPressedDispatcher?.onBackPressed()
+        }
 
-        val editRenta = view.findViewById<TextInputEditText>(R.id.editRentaMensual)
-        val editInversion = view.findViewById<TextInputEditText>(R.id.editInversionInicial)
-        val editTicket = view.findViewById<TextInputEditText>(R.id.editTicketPromedio)
-        val editMargen = view.findViewById<TextInputEditText>(R.id.editMargenPromedio)
-        val editVentas = view.findViewById<TextInputEditText>(R.id.editVentasEstimadas)
+        // Sliders y valores
+        val seekRenta = view.findViewById<SeekBar>(R.id.seekRenta)
+        val seekInversion = view.findViewById<SeekBar>(R.id.seekInversion)
+        val seekTicket = view.findViewById<SeekBar>(R.id.seekTicket)
+        val seekVentas = view.findViewById<SeekBar>(R.id.seekVentas)
 
-        val textRoi = view.findViewById<android.widget.TextView>(R.id.textRoiPorcentaje)
-        val textRoiDetalle = view.findViewById<android.widget.TextView>(R.id.textRoiDetalle)
-        val textComparativa = view.findViewById<android.widget.TextView>(R.id.textComparativaMercado)
-        val viewRiesgo = view.findViewById<View>(R.id.viewRiesgo)
-        val textIngresosMensuales = view.findViewById<android.widget.TextView>(R.id.textIngresosMensuales)
-        val textPuntoEquilibrio = view.findViewById<android.widget.TextView>(R.id.textPuntoEquilibrio)
+        val textRentaValor = view.findViewById<TextView>(R.id.textRentaValor)
+        val textInversionValor = view.findViewById<TextView>(R.id.textInversionValor)
+        val textTicketValor = view.findViewById<TextView>(R.id.textTicketValor)
+        val textVentasValor = view.findViewById<TextView>(R.id.textVentasValor)
 
-        // Grid de categorías
-        val cards = mapOf(
-            Categoria.RESTAURANTE to view.findViewById<MaterialCardView>(R.id.card_restaurante),
-            Categoria.CAFETERIA to view.findViewById<MaterialCardView>(R.id.card_cafeteria),
-            Categoria.TALLER to view.findViewById<MaterialCardView>(R.id.card_taller),
-            Categoria.FARMACIA to view.findViewById<MaterialCardView>(R.id.card_farmacia),
-            Categoria.PAPELERIA to view.findViewById<MaterialCardView>(R.id.card_papeleria),
-            Categoria.FLORERIA to view.findViewById<MaterialCardView>(R.id.card_floreria),
-            Categoria.PERSONALIZADO to view.findViewById<MaterialCardView>(R.id.card_personalizado)
-        )
+        // ROI highlight
+        val textRoiBig = view.findViewById<TextView>(R.id.textRoiBig)
+        val textRoiDelta = view.findViewById<TextView>(R.id.textRoiDelta)
+        val textMesesRetorno = view.findViewById<TextView>(R.id.textMesesRetorno)
+        val textNivelRiesgo = view.findViewById<TextView>(R.id.textNivelRiesgo)
+        val dotRiesgo = view.findViewById<View>(R.id.dotRiesgo)
+        val timelineLine = view.findViewById<View>(R.id.timelineLine)
+        val dotEquilibrio = view.findViewById<View>(R.id.dotEquilibrio)
+        val pillEquilibrio = view.findViewById<TextView>(R.id.textPuntoEquilibrioPill)
+        val labelMesEquilibrio = view.findViewById<TextView>(R.id.textMesEquilibrioNumber)
 
-        cards.forEach { (categoria, card) ->
-            card.setOnClickListener {
-                seleccionarCategoria(categoria, cards.values.toList(), cardInputs, btnAjustesAvanzados)
-                aplicarPresetParaCategoria(
-                    categoria,
-                    editRenta,
-                    editInversion,
-                    editTicket,
-                    editMargen,
-                    editVentas
-                )
+        fun showNumberInput(title: String, hint: String, initial: Double?, onOk: (Double) -> Unit) {
+            val input = TextInputEditText(requireContext()).apply {
+                inputType = android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
+                setText(initial?.let { String.format(Locale.getDefault(), "%.0f", it) } ?: "")
+                hint?.let { setHint(it) }
+            }
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(title)
+                .setView(input)
+                .setPositiveButton("Aceptar") { _, _ ->
+                    val v = input.text?.toString()?.replace(",", "")?.replace("$", "")?.trim()?.toDoubleOrNull()
+                    if (v != null) onOk(v) else Toast.makeText(requireContext(), "Valor no válido", Toast.LENGTH_SHORT).show()
+                }
+                .setNegativeButton("Cancelar", null)
+                .show()
+        }
+
+        fun rentaFrom(progress: Int) = 2500.0 + progress * 1000.0
+        fun inversionFrom(progress: Int) = 50000.0 + progress * 10000.0
+        fun ticketFrom(progress: Int) = 50.0 + progress * 20.0
+        fun ventasFrom(progress: Int) = 50.0 + progress * 10.0
+
+        fun actualizarLabels() {
+            textRentaValor.text = String.format(Locale.getDefault(), "$%,.0f", rentaFrom(seekRenta.progress))
+            textInversionValor.text = String.format(Locale.getDefault(), "$%,.0f", inversionFrom(seekInversion.progress))
+            textTicketValor.text = String.format(Locale.getDefault(), "$%,.0f", ticketFrom(seekTicket.progress))
+            textVentasValor.text = String.format(Locale.getDefault(), "%,.0f/mes", ventasFrom(seekVentas.progress))
+        }
+
+        fun posicionarPuntoEquilibrio(meses: Double) {
+            val mesesClamped = meses.coerceIn(1.0, 24.0)
+            timelineLine.post {
+                val lineLeft = timelineLine.left.toFloat()
+                val lineWidth = timelineLine.width.toFloat().coerceAtLeast(1f)
+                val ratio = ((mesesClamped - 1.0) / 23.0).toFloat()
+                val xPos = lineLeft + ratio * lineWidth - dotEquilibrio.width / 2f
+                ObjectAnimator.ofFloat(dotEquilibrio, View.TRANSLATION_X, dotEquilibrio.translationX, xPos).apply {
+                    duration = 220
+                    start()
+                }
+                pillEquilibrio.post {
+                    ObjectAnimator.ofFloat(pillEquilibrio, View.TRANSLATION_X, pillEquilibrio.translationX, xPos - (pillEquilibrio.width / 2f) + (dotEquilibrio.width / 2f)).apply {
+                        duration = 220
+                        start()
+                    }
+                }
+                labelMesEquilibrio.post {
+                    labelMesEquilibrio.text = String.format(Locale.getDefault(), "Mes %.0f", mesesClamped)
+                    ObjectAnimator.ofFloat(labelMesEquilibrio, View.TRANSLATION_X, labelMesEquilibrio.translationX, xPos - (labelMesEquilibrio.width / 2f) + (dotEquilibrio.width / 2f)).apply {
+                        duration = 220
+                        start()
+                    }
+                }
             }
         }
 
-        btnAjustesAvanzados.setOnClickListener {
-            mostrarDialogoAjustesAvanzados()
+        fun recalcular() {
+            val renta = rentaFrom(seekRenta.progress)
+            val inversion = inversionFrom(seekInversion.progress)
+            val ticket = ticketFrom(seekTicket.progress)
+            val ventas = ventasFrom(seekVentas.progress)
+            val margen = 40.0
+
+            val margenDecimal = margen / 100.0
+            val ingresosBrutosMensuales = ticket * ventas
+            val utilidadBrutaMensual = ingresosBrutosMensuales * margenDecimal
+            val otrosCostosMensuales = gastoMarketingMensual + costoEmpleadosMensual
+            val utilidadNetaMensual = utilidadBrutaMensual - renta - otrosCostosMensuales
+
+            if (utilidadNetaMensual <= 0.0 || inversion <= 0.0) {
+                textRoiBig.text = "--"
+                textMesesRetorno.text = "—"
+                textNivelRiesgo.text = "DEMASIADO ALTO"
+                dotRiesgo.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.risk_high)
+                textRoiDelta.text = "0.0%"
+            } else {
+                val meses = inversion / utilidadNetaMensual
+                val roiAnual = (utilidadNetaMensual * 12.0 / inversion) * 100.0
+                textRoiBig.text = String.format(Locale.getDefault(), "%.1f%%", roiAnual)
+                textMesesRetorno.text = String.format(Locale.getDefault(), "%.0f meses", meses)
+                posicionarPuntoEquilibrio(meses)
+
+                val color = when {
+                    meses > 36 || roiAnual < 5 -> R.color.risk_high
+                    meses > 18 || roiAnual < 15 -> R.color.risk_medium
+                    else -> R.color.risk_low
+                }
+                textNivelRiesgo.text = when (color) {
+                    R.color.risk_high -> "ALTO"
+                    R.color.risk_medium -> "MEDIO"
+                    else -> "BAJO"
+                }
+                dotRiesgo.backgroundTintList = ContextCompat.getColorStateList(requireContext(), color)
+                textRoiDelta.text = "+2.1%"
+            }
         }
 
-        btnCalcular.setOnClickListener {
-            val categoria = categoriaSeleccionada
-            if (categoria == null) {
-                Toast.makeText(requireContext(), "Selecciona un giro para comenzar.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+        val listener = object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                actualizarLabels()
             }
-
-            val renta = editRenta.text.toString().replace(",", "").toDoubleOrNull()
-            val inversion = editInversion.text.toString().replace(",", "").toDoubleOrNull()
-            val ticket = editTicket.text.toString().replace(",", "").toDoubleOrNull()
-            val margen = editMargen.text.toString().replace(",", "").toDoubleOrNull()
-            val ventas = editVentas.text.toString().replace(",", "").toDoubleOrNull()
-
-            if (renta == null || inversion == null || ticket == null || margen == null || ventas == null) {
-                Toast.makeText(requireContext(), "Completa todos los parámetros numéricos.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                recalcular()
             }
-
-            calcularYMostrarRoi(
-                rentaMensual = renta,
-                inversionInicial = inversion,
-                ticketPromedio = ticket,
-                margenPorcentaje = margen,
-                ventasEstimadas = ventas,
-                textRoi = textRoi,
-                textRoiDetalle = textRoiDetalle,
-                textComparativa = textComparativa,
-                viewRiesgo = viewRiesgo,
-                textIngresosMensuales = textIngresosMensuales,
-                textPuntoEquilibrio = textPuntoEquilibrio
-            )
         }
+
+        seekRenta.setOnSeekBarChangeListener(listener)
+        seekInversion.setOnSeekBarChangeListener(listener)
+        seekTicket.setOnSeekBarChangeListener(listener)
+        seekVentas.setOnSeekBarChangeListener(listener)
+
+        textRentaValor.setOnClickListener {
+            showNumberInput("Renta Mensual", "$", rentaFrom(seekRenta.progress)) { value ->
+                val p = ((value - 2500.0) / 1000.0).toInt().coerceIn(0, 100)
+                seekRenta.progress = p
+                actualizarLabels()
+                recalcular()
+            }
+        }
+        textInversionValor.setOnClickListener {
+            showNumberInput("Inversión Inicial", "$", inversionFrom(seekInversion.progress)) { value ->
+                val p = ((value - 50000.0) / 10000.0).toInt().coerceIn(0, 100)
+                seekInversion.progress = p
+                actualizarLabels()
+                recalcular()
+            }
+        }
+        textTicketValor.setOnClickListener {
+            showNumberInput("Ticket Promedio", "$", ticketFrom(seekTicket.progress)) { value ->
+                val p = ((value - 50.0) / 20.0).toInt().coerceIn(0, 100)
+                seekTicket.progress = p
+                actualizarLabels()
+                recalcular()
+            }
+        }
+        textVentasValor.setOnClickListener {
+            showNumberInput("Ventas Estimadas (mes)", "", ventasFrom(seekVentas.progress)) { value ->
+                val p = ((value - 50.0) / 10.0).toInt().coerceIn(0, 100)
+                seekVentas.progress = p
+                actualizarLabels()
+                recalcular()
+            }
+        }
+
+        actualizarLabels()
+        recalcular()
     }
 
     private fun seleccionarCategoria(
@@ -344,4 +444,3 @@ class SimuladorFragment : Fragment() {
         }
     }
 }
-

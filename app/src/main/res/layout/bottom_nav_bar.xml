@@ -36,7 +36,7 @@
             android:layout_width="26dp"
             android:layout_height="26dp"
             android:layout_gravity="center"
-            android:contentDescription="@null"
+            android:contentDescription="@string/nav_inicio"
             android:src="@drawable/ic_nav_home"
             android:scaleType="centerInside" android:elevation="0dp" />
     </FrameLayout>
@@ -64,7 +64,7 @@
             android:layout_width="26dp"
             android:layout_height="26dp"
             android:layout_gravity="center"
-            android:contentDescription="@null"
+            android:contentDescription="@string/nav_mapa"
             android:src="@drawable/ic_nav_map"
             android:scaleType="centerInside" android:elevation="0dp" />
     </FrameLayout>
@@ -92,7 +92,7 @@
             android:layout_width="26dp"
             android:layout_height="26dp"
             android:layout_gravity="center"
-            android:contentDescription="@null"
+            android:contentDescription="@string/nav_analisis"
             android:src="@drawable/ic_nav_pie"
             android:scaleType="centerInside" android:elevation="0dp" />
     </FrameLayout>
@@ -120,7 +120,7 @@
             android:layout_width="26dp"
             android:layout_height="26dp"
             android:layout_gravity="center"
-            android:contentDescription="@null"
+            android:contentDescription="@string/nav_simulador"
             android:src="@drawable/ic_nav_simulator"
             android:scaleType="centerInside" android:elevation="0dp" />
     </FrameLayout>

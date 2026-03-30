@@ -14,6 +14,9 @@ import com.github.mikephil.charting.data.RadarDataSet
 import com.github.mikephil.charting.data.RadarEntry
 import com.github.mikephil.charting.formatter.ValueFormatter
 import android.widget.TextView
+import android.widget.ProgressBar
+import android.widget.ImageView
+import com.google.android.material.button.MaterialButton
 
 class AnalisisFragment : Fragment() {
     override fun onCreateView(
@@ -42,18 +45,34 @@ class AnalisisFragment : Fragment() {
             x7 = xValues[6]
         )
 
+        setupToolbar(view)
         setupScoreSummary(view, result)
+        setupStats(view, result)
         setupRadarChart(view, xValues)
         setupFoda(view, result)
+
+        view.findViewById<MaterialButton?>(R.id.btn_simular_punto)?.setOnClickListener {
+            (activity as? MainActivity)?.navigateToTab(1)
+        }
+    }
+
+    private fun setupToolbar(root: View) {
+        root.findViewById<ImageView?>(R.id.btnBack)?.setOnClickListener {
+            activity?.onBackPressedDispatcher?.onBackPressed()
+        }
+        root.findViewById<ImageView?>(R.id.btnShare)?.setOnClickListener {
+            // Espacio para compartir en futuras versiones
+        }
     }
 
     private fun setupScoreSummary(root: View, result: GeoBizResult) {
-        val textScorePorcentaje = root.findViewById<TextView>(R.id.textScorePorcentaje)
         val textScoreInterpretacion = root.findViewById<TextView>(R.id.textScoreInterpretacion)
-        val viewSemaforo = root.findViewById<View>(R.id.viewSemaforoScore)
+        val progressScore = root.findViewById<ProgressBar>(R.id.progressScore)
+        val textScoreValor = root.findViewById<TextView>(R.id.textScoreValor)
 
-        val scoreFormatted = String.format("%.1f%%", result.normalizedScore)
-        textScorePorcentaje.text = "Score GeoBiz $scoreFormatted"
+        val scoreRounded = result.normalizedScore.coerceIn(0.0, 100.0)
+        progressScore?.progress = scoreRounded.toInt()
+        textScoreValor?.text = scoreRounded.toInt().toString()
 
         val (mensaje, colorRes) = when (result.recommendationColor) {
             RecommendationColor.VERDE_EXITO ->
@@ -67,9 +86,49 @@ class AnalisisFragment : Fragment() {
         }
 
         textScoreInterpretacion.text = mensaje
-        viewSemaforo.setBackgroundColor(
-            ContextCompat.getColor(requireContext(), colorRes)
-        )
+        textScoreInterpretacion.setTextColor(ContextCompat.getColor(requireContext(), colorRes))
+    }
+
+    private fun setupStats(root: View, result: GeoBizResult) {
+        val textViabilidadNivel = root.findViewById<TextView>(R.id.textViabilidadNivel)
+        val textViabilidadPorcentaje = root.findViewById<TextView>(R.id.textViabilidadPorcentaje)
+        val dotViabilidad = root.findViewById<View>(R.id.dotViabilidad)
+        val textRoiValor = root.findViewById<TextView>(R.id.textRoiValor)
+        val textRoiPercentil = root.findViewById<TextView>(R.id.textRoiPercentil)
+
+        when (result.recommendationColor) {
+            RecommendationColor.VERDE_EXITO -> {
+                textViabilidadNivel?.text = "Alta"
+                dotViabilidad?.backgroundTintList =
+                    ContextCompat.getColorStateList(requireContext(), R.color.risk_low)
+                textViabilidadPorcentaje?.setTextColor(
+                    ContextCompat.getColor(requireContext(), R.color.risk_low)
+                )
+            }
+            RecommendationColor.AMARILLO_RIESGO_MEDIO -> {
+                textViabilidadNivel?.text = "Media"
+                dotViabilidad?.backgroundTintList =
+                    ContextCompat.getColorStateList(requireContext(), R.color.risk_medium)
+                textViabilidadPorcentaje?.setTextColor(
+                    ContextCompat.getColor(requireContext(), R.color.risk_medium)
+                )
+            }
+            RecommendationColor.ROJO_NO_RECOMENDADO -> {
+                textViabilidadNivel?.text = "Baja"
+                dotViabilidad?.backgroundTintList =
+                    ContextCompat.getColorStateList(requireContext(), R.color.risk_high)
+                textViabilidadPorcentaje?.setTextColor(
+                    ContextCompat.getColor(requireContext(), R.color.risk_high)
+                )
+            }
+        }
+
+        val growthPct = 12.4
+        textViabilidadPorcentaje?.text = String.format("%+.1f%%", growthPct)
+
+        val roiMonths = 14
+        textRoiValor?.text = "$roiMonths meses"
+        textRoiPercentil?.text = "Percentil 90 local"
     }
 
     private fun setupRadarChart(root: View, xValues: DoubleArray) {

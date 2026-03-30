@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="geobiz_simulador_titulo">Simulador GeoBiz</string>
+    <string name="geobiz_analisis_titulo">Análisis GeoBiz</string>
+    <string name="accion_atras">Atrás</string>
+    <string name="accion_compartir">Compartir</string>
+    <string name="simular_con_este_punto">Simular con este punto</string>
+    <string name="punto_equilibrio">Punto de Equilibrio</string>
+    <string name="variacion_label">Variación</string>
+    <string name="nav_inicio">Inicio</string>
+    <string name="nav_mapa">Mapa</string>
+    <string name="nav_analisis">Análisis</string>
+    <string name="nav_simulador">Simulador</string>
+</resources>

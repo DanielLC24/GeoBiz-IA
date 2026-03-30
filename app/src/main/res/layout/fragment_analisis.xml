@@ -1,210 +1,701 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
     android:background="@color/background_geobiz">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="24dp">
+        android:paddingBottom="32dp">
 
-        <!-- Encabezado -->
+        <!-- Toolbar -->
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:padding="12dp"
+            android:src="@drawable/ic_back"
+            android:contentDescription="@string/accion_atras"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <TextView
             android:id="@+id/textTituloAnalisis"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Análisis GeoBiz"
-            android:textSize="22sp"
+            android:text="@string/geobiz_analisis_titulo"
+            android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="@color/primary_geobiz" />
+            android:textColor="@color/on_surface_geobiz"
+            app:layout_constraintBottom_toBottomOf="@id/btnBack"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/btnBack" />
 
-        <TextView
-            android:id="@+id/textDescripcionAnalisis"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Resumen multicriterio de la ubicación seleccionada."
-            android:textSize="13sp"
-            android:textColor="@color/on_surface_geobiz" />
+        <ImageView
+            android:id="@+id/btnShare"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="8dp"
+            android:padding="12dp"
+            android:src="@drawable/ic_share"
+            android:contentDescription="@string/accion_compartir"
+            app:layout_constraintBottom_toBottomOf="@id/btnBack"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/btnBack" />
 
-        <!-- Resumen de score -->
+        <!-- First Row: Score + Stats -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_score"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="240dp"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            app:cardCornerRadius="18dp"
-            app:cardElevation="4dp"
-            app:cardBackgroundColor="@color/surface_geobiz">
+            android:layout_marginEnd="8dp"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="@color/surface_geobiz"
+            app:layout_constraintEnd_toStartOf="@+id/guideline_vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btnBack">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
                 android:orientation="vertical"
                 android:padding="16dp">
 
                 <TextView
-                    android:id="@+id/textScorePorcentaje"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Score GeoBiz —"
-                    android:textSize="22sp"
+                    android:text="GEOBIZ SCORE"
+                    android:textSize="12sp"
                     android:textStyle="bold"
-                    android:textColor="@color/primary_geobiz" />
+                    android:textColor="@color/secondary_geobiz"
+                    android:letterSpacing="0.1" />
+
+                <FrameLayout
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:layout_marginTop="16dp">
+
+                    <ProgressBar
+                        android:id="@+id/progressScore"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:indeterminate="false"
+                        android:max="100"
+                        android:progress="85"
+                        android:progressDrawable="@drawable/bg_circular_progress" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/textScoreValor"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="85"
+                            android:textSize="32sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/on_surface_geobiz" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="de 100"
+                            android:textSize="10sp"
+                            android:textColor="@color/on_surface_variant_geobiz" />
+                    </LinearLayout>
+                </FrameLayout>
 
                 <TextView
                     android:id="@+id/textScoreInterpretacion"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="Selecciona un punto en el mapa y un giro para ver el análisis."
-                    android:textSize="13sp"
-                    android:textColor="@color/on_surface_geobiz" />
+                    android:layout_marginTop="16dp"
+                    android:text="Ubicación de alta demanda"
+                    android:textSize="11sp"
+                    android:gravity="center"
+                    android:textColor="@color/primary_geobiz" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
+
+        <!-- Viabilidad -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_viabilidad"
+            android:layout_width="0dp"
+            android:layout_height="112dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="@color/surface_geobiz"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guideline_vertical"
+            app:layout_constraintTop_toBottomOf="@id/btnBack">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:gravity="center_vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:text="Semáforo de viabilidad"
-                    android:textSize="12sp"
-                    android:textColor="@color/on_surface_geobiz" />
+                    android:text="VIABILIDAD"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/secondary_geobiz"
+                    android:letterSpacing="0.1" />
 
-                <View
-                    android:id="@+id/viewSemaforoScore"
-                    android:layout_width="match_parent"
-                    android:layout_height="10dp"
-                    android:layout_marginTop="6dp"
-                    android:background="@color/surface_variant_geobiz" />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <View
+                        android:id="@+id/dotViabilidad"
+                        android:layout_width="8dp"
+                        android:layout_height="8dp"
+                        android:background="@drawable/bg_nav_item_selected"
+                        android:backgroundTint="@color/primary_geobiz" />
+
+                    <TextView
+                        android:id="@+id/textViabilidadNivel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="Alta"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/on_surface_geobiz" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:src="@drawable/ic_trending_up"
+                        app:tint="@color/primary_geobiz" />
+
+                    <TextView
+                        android:id="@+id/textViabilidadPorcentaje"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:text="+12.4%"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/primary_geobiz" />
+                </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- RadarChart con las 7 variables -->
+        <!-- ROI Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_roi"
+            android:layout_width="0dp"
+            android:layout_height="112dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="@color/surface_geobiz"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guideline_vertical"
+            app:layout_constraintTop_toBottomOf="@id/card_viabilidad">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ROI EST."
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/secondary_geobiz"
+                    android:letterSpacing="0.1" />
+
+                <TextView
+                    android:id="@+id/textRoiValor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="14 meses"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/on_surface_geobiz" />
+
+                <TextView
+                    android:id="@+id/textRoiPercentil"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Percentil 90 local"
+                    android:textSize="10sp"
+                    android:textColor="@color/on_surface_variant_geobiz" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Métricas de Mercado -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_radar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            app:cardCornerRadius="18dp"
-            app:cardElevation="4dp"
-            app:cardBackgroundColor="@color/surface_geobiz">
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="16dp"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="@color/surface_geobiz"
+            app:layout_constraintTop_toBottomOf="@id/card_score">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="20dp">
 
-                <TextView
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Perfil de la ubicación"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/on_surface_geobiz" />
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="Se grafican: Peatonal, Vehicular, Competencia, NSE, Seguridad, Densidad y Renta."
-                    android:textSize="12sp"
-                    android:textColor="@color/on_surface_geobiz" />
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_nav_pie"
+                        app:tint="@color/primary_geobiz" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="Métricas de Mercado"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/on_surface_geobiz" />
+                </LinearLayout>
 
                 <com.github.mikephil.charting.charts.RadarChart
                     android:id="@+id/radarChartGeoBiz"
                     android:layout_width="match_parent"
-                    android:layout_height="260dp"
-                    android:layout_marginTop="12dp" />
+                    android:layout_height="280dp"
+                    android:layout_marginTop="16dp" />
+
+                <!-- Leyendas -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+                        <View
+                            android:layout_width="8dp"
+                            android:layout_height="8dp"
+                            android:background="@drawable/bg_nav_item_selected"
+                            android:backgroundTint="@color/primary_geobiz" />
+                        <TextView
+                            android:id="@+id/legend1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:text="Tráfico: Muy Alto"
+                            android:textSize="10sp"
+                            android:textColor="@color/on_surface_variant_geobiz" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+                        <View
+                            android:layout_width="8dp"
+                            android:layout_height="8dp"
+                            android:background="@drawable/bg_nav_item_selected"
+                            android:backgroundTint="@color/secondary_geobiz" />
+                        <TextView
+                            android:id="@+id/legend2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:text="NSE: A/B, C+"
+                            android:textSize="10sp"
+                            android:textColor="@color/on_surface_variant_geobiz" />
+                    </LinearLayout>
+                </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- FODA automático -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card_foda"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_simular_punto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="12dp"
-            app:cardCornerRadius="18dp"
-            app:cardElevation="4dp"
-            app:cardBackgroundColor="@color/surface_geobiz">
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="16dp"
+            android:text="@string/simular_con_este_punto"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:paddingVertical="12dp"
+            app:cornerRadius="20dp"
+            app:backgroundTint="@color/primary_geobiz"
+            app:layout_constraintTop_toBottomOf="@id/card_radar" />
+
+        <!-- FODA -->
+        <TextView
+            android:id="@+id/textFodaTitulo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="16dp"
+            android:text="Análisis Estratégico (FODA)"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/on_surface_geobiz"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_simular_punto" />
+
+        <!-- Fortaleza Item -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_fortaleza"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="@color/foda_fortaleza_bg"
+            app:layout_constraintTop_toBottomOf="@id/textFodaTitulo">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:orientation="horizontal"
                 android:padding="16dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Análisis FODA automático"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/on_surface_geobiz" />
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:padding="8dp"
+                    android:background="@drawable/bg_nav_item_selected"
+                    android:backgroundTint="@color/surface_geobiz"
+                    android:src="@drawable/ic_fortaleza" />
 
-                <!-- Fortalezas -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:text="Fortalezas"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/primary_geobiz" />
-
-                <TextView
-                    android:id="@+id/textFortalezas"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="Se mostrarán aquí las variables con valor &gt; 70."
-                    android:textSize="12sp"
-                    android:textColor="@color/on_surface_geobiz" />
+                    android:layout_marginStart="16dp"
+                    android:orientation="vertical">
 
-                <!-- Amenazas -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:text="Amenazas"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/risk_high" />
+                    <TextView
+                        android:id="@+id/textFortalezasTitulo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Fortaleza: Flujo Peatonal"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/on_surface_geobiz" />
 
-                <TextView
-                    android:id="@+id/textAmenazas"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="Variables con valor &lt; 40 o competencia muy alta aparecerán aquí."
-                    android:textSize="12sp"
-                    android:textColor="@color/on_surface_geobiz" />
-
-                <!-- Oportunidades -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:text="Oportunidades"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/risk_low" />
-
-                <TextView
-                    android:id="@+id/textOportunidades"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="Se resaltarán zonas con alto NSE y baja competencia."
-                    android:textSize="12sp"
-                    android:textColor="@color/on_surface_geobiz" />
+                    <TextView
+                        android:id="@+id/textFortalezas"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Promedio de 450 personas/hora en horas pico. Ideal para consumo impulsivo."
+                        android:textSize="11sp"
+                        android:textColor="@color/on_surface_variant_geobiz" />
+                </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-    </LinearLayout>
+        <!-- Oportunidad Item -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_oportunidad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="16dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="@color/foda_oportunidad_bg"
+            app:layout_constraintTop_toBottomOf="@id/card_fortaleza">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="16dp">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:padding="8dp"
+                    android:background="@drawable/bg_nav_item_selected"
+                    android:backgroundTint="@color/surface_geobiz"
+                    android:src="@drawable/ic_oportunidad" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/textOportunidadesTitulo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Oportunidad: Nicho Desatendido"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/on_surface_geobiz" />
+
+                    <TextView
+                        android:id="@+id/textOportunidades"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Baja presencia de cafeterías de especialidad en un radio de 500m."
+                        android:textSize="11sp"
+                        android:textColor="@color/on_surface_variant_geobiz" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Debilidad Item -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_debilidad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="16dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="@color/foda_debilidad_bg"
+            app:layout_constraintTop_toBottomOf="@id/card_oportunidad">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="16dp">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:padding="8dp"
+                    android:background="@drawable/bg_nav_item_selected"
+                    android:backgroundTint="@color/surface_geobiz"
+                    android:src="@drawable/ic_debilidad" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/textDebilidadesTitulo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Debilidad: Estacionamiento"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/on_surface_geobiz" />
+
+                    <TextView
+                        android:id="@+id/textDebilidades"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Espacio limitado para vehículos propios. Se recomienda foco en delivery."
+                        android:textSize="11sp"
+                        android:textColor="@color/on_surface_variant_geobiz" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Amenaza Item -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_amenaza"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="16dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="@color/foda_amenaza_bg"
+            app:layout_constraintTop_toBottomOf="@id/card_debilidad">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="16dp">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:padding="8dp"
+                    android:background="@drawable/bg_nav_item_selected"
+                    android:backgroundTint="@color/surface_geobiz"
+                    android:src="@drawable/ic_amenaza" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/textAmenazasTitulo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Amenazas"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/on_surface_geobiz" />
+
+                    <TextView
+                        android:id="@+id/textAmenazas"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Variables con valor &lt; 40 o competencia muy alta aparecerán aquí."
+                        android:textSize="11sp"
+                        android:textColor="@color/on_surface_variant_geobiz" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Map Section -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_mapa_resumen"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="16dp"
+            app:cardCornerRadius="28dp"
+            app:cardElevation="4dp"
+            app:strokeWidth="0dp"
+            app:layout_constraintTop_toBottomOf="@id/card_amenaza">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <!-- Placeholder for map -->
+                <ImageView
+                    android:id="@+id/imgMapaEstatico"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/logo"
+                    android:alpha="0.8" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_nav_bar"
+                    android:backgroundTint="#80000000" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|start"
+                    android:layout_margin="16dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_person_pin"
+                        app:tint="@color/primary_geobiz" />
+
+                    <TextView
+                        android:id="@+id/textDireccionAnalisis"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="Av. Insurgentes Sur 1450"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/surface_geobiz" />
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_gravity="top|end"
+                    android:layout_margin="12dp"
+                    android:padding="8dp"
+                    android:background="@drawable/bg_nav_item_selected"
+                    android:backgroundTint="@color/surface_geobiz"
+                    android:src="@drawable/ic_best_location"
+                    app:tint="@color/on_surface_geobiz" />
+
+            </FrameLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

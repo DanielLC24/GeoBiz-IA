@@ -12,22 +12,399 @@
         android:orientation="vertical"
         android:padding="24dp">
 
-        <!-- Título -->
-        <TextView
-            android:layout_width="wrap_content"
+        <!-- Toolbar -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Simulador de negocio"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:textColor="@color/primary_geobiz" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingVertical="8dp">
+            <ImageView
+                android:id="@+id/btnBackSim"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:padding="12dp"
+                android:src="@drawable/ic_back"
+                android:contentDescription="@string/accion_atras" />
+            <TextView
+                android:id="@+id/titleSimulador"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/geobiz_simulador_titulo"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textColor="@color/on_surface_geobiz" />
+            <ImageView
+                android:id="@+id/btnShareSim"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:padding="12dp"
+                android:src="@drawable/ic_share"
+                android:contentDescription="@string/accion_compartir" />
+        </LinearLayout>
 
+        <!-- ROI Calculado (Anual) -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_roi_highlight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/foda_fortaleza_bg">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ROI Calculado (Anual)"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/on_surface_geobiz" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="6dp">
+                    <TextView
+                        android:id="@+id/textRoiBig"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="24.5%"
+                        android:textSize="34sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/on_surface_geobiz" />
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginStart="10dp">
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_trending_up"
+                            android:contentDescription="@string/variacion_label"
+                            app:tint="@color/risk_low" />
+                        <TextView
+                            android:id="@+id/textRoiDelta"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
+                            android:text="+2.1%"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/risk_low" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="12dp">
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Meses para Retorno"
+                            android:textSize="11sp"
+                            android:textColor="@color/on_surface_variant_geobiz" />
+                        <TextView
+                            android:id="@+id/textMesesRetorno"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="14 meses"
+                            android:textStyle="bold"
+                            android:textSize="16sp"
+                            android:textColor="@color/on_surface_geobiz" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Nivel de Riesgo"
+                            android:textSize="11sp"
+                            android:textColor="@color/on_surface_variant_geobiz" />
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+                            <View
+                                android:id="@+id/dotRiesgo"
+                                android:layout_width="8dp"
+                                android:layout_height="8dp"
+                                android:background="@drawable/bg_nav_item_selected"
+                                android:backgroundTint="@color/risk_low" />
+                            <TextView
+                                android:id="@+id/textNivelRiesgo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="6dp"
+                                android:text="BAJO"
+                                android:textStyle="bold"
+                                android:textSize="16sp"
+                                android:textColor="@color/on_surface_geobiz" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Parámetros del Negocio -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Explora la viabilidad financiera de tu giro en la zona BUAP."
-            android:textSize="13sp"
+            android:layout_marginTop="20dp"
+            android:text="Parámetros del Negocio"
+            android:textSize="16sp"
+            android:textStyle="bold"
             android:textColor="@color/on_surface_geobiz" />
+
+        <!-- Renta Mensual -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Renta Mensual"
+                android:textSize="14sp"
+                android:textColor="@color/on_surface_geobiz" />
+            <TextView
+                android:id="@+id/textRentaValor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="6dp"
+                android:text="$2,500"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="@color/on_surface_geobiz"
+                android:background="@drawable/bg_nav_item_selected"
+                android:backgroundTint="@color/surface_geobiz" />
+        </LinearLayout>
+        <SeekBar
+            android:id="@+id/seekRenta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:max="100"
+            android:progress="10" />
+
+        <!-- Inversión Inicial -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Inversión Inicial"
+                android:textSize="14sp"
+                android:textColor="@color/on_surface_geobiz" />
+            <TextView
+                android:id="@+id/textInversionValor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="6dp"
+                android:text="$50,000"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="@color/on_surface_geobiz"
+                android:background="@drawable/bg_nav_item_selected"
+                android:backgroundTint="@color/surface_geobiz" />
+        </LinearLayout>
+        <SeekBar
+            android:id="@+id/seekInversion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:max="100"
+            android:progress="20" />
+
+        <!-- Ticket Promedio -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Ticket Promedio"
+                android:textSize="14sp"
+                android:textColor="@color/on_surface_geobiz" />
+            <TextView
+                android:id="@+id/textTicketValor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="6dp"
+                android:text="$450"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="@color/on_surface_geobiz"
+                android:background="@drawable/bg_nav_item_selected"
+                android:backgroundTint="@color/surface_geobiz" />
+        </LinearLayout>
+        <SeekBar
+            android:id="@+id/seekTicket"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:max="100"
+            android:progress="40" />
+
+        <!-- Ventas Estimadas -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Ventas Estimadas"
+                android:textSize="14sp"
+                android:textColor="@color/on_surface_geobiz" />
+            <TextView
+                android:id="@+id/textVentasValor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="6dp"
+                android:text="120/mes"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="@color/on_surface_geobiz"
+                android:background="@drawable/bg_nav_item_selected"
+                android:backgroundTint="@color/surface_geobiz" />
+        </LinearLayout>
+        <SeekBar
+            android:id="@+id/seekVentas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:max="100"
+            android:progress="30" />
+
+        <!-- Línea de tiempo -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="LÍNEA DE TIEMPO DEL RETORNO"
+            android:textAllCaps="true"
+            android:letterSpacing="0.05"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="@color/on_surface_variant_geobiz" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Mes 1"
+                android:textSize="11sp"
+                android:textColor="@color/on_surface_variant_geobiz" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mes 24"
+                android:textSize="11sp"
+                android:textColor="@color/on_surface_variant_geobiz" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:layout_marginTop="8dp">
+            <View
+                android:id="@+id/timelineLine"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:background="@color/surface_variant_geobiz" />
+            <View
+                android:id="@+id/dotEquilibrio"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/bg_nav_item_selected"
+                android:backgroundTint="@color/primary_geobiz" />
+            <TextView
+                android:id="@+id/textPuntoEquilibrioPill"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|start"
+                android:background="@drawable/bg_nav_item_selected"
+                android:backgroundTint="@color/nav_bar_selected_circle"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="6dp"
+                android:text="Punto de Equilibrio"
+                android:textColor="@color/on_surface_geobiz"
+                android:textSize="11sp" />
+            <TextView
+                android:id="@+id/textMesEquilibrioNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|start"
+                android:text="—"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="@color/on_surface_variant_geobiz" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="6dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Inversión" android:textSize="11sp" android:textColor="@color/on_surface_variant_geobiz" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="60dp" android:text="Recuperación" android:textSize="11sp" android:textColor="@color/on_surface_variant_geobiz" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="60dp" android:text="Ganancia" android:textSize="11sp" android:textColor="@color/on_surface_variant_geobiz" />
+        </LinearLayout>
+
+        
 
         <!-- Selección de giro (grid de iconos) -->
         <TextView
@@ -44,6 +421,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
+            android:visibility="gone"
             app:columnCount="3"
             app:rowCount="3"
             app:useDefaultMargins="true">
@@ -321,6 +699,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
+            android:visibility="gone"
             app:cardCornerRadius="18dp"
             app:cardElevation="4dp"
             app:cardBackgroundColor="@color/surface_geobiz">
@@ -477,6 +856,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
+            android:visibility="gone"
             android:text="Calcular ROI"
             android:textAllCaps="false"
             android:textColor="@android:color/white"
@@ -491,6 +871,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="12dp"
+            android:visibility="gone"
             app:cardCornerRadius="18dp"
             app:cardElevation="4dp"
             app:cardBackgroundColor="@color/surface_geobiz">

@@ -9,7 +9,8 @@
         <item name="colorOnSecondary">@color/on_secondary_geobiz</item>
 
         <item name="android:windowBackground">@color/background_geobiz</item>
-        <item name="android:statusBarColor">@color/primary_geobiz</item>
+        <item name="android:statusBarColor">@color/background_geobiz</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
 </resources>
