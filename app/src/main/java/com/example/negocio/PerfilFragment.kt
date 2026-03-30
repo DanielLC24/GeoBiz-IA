@@ -24,11 +24,17 @@ class PerfilFragment : Fragment() {
         val editIp      = view.findViewById<TextInputEditText>(R.id.edit_server_ip)
         val btnGuardar  = view.findViewById<MaterialButton>(R.id.btn_guardar_ip)
         val textActual  = view.findViewById<TextView>(R.id.text_ip_actual)
+        val btnBackHome = view.findViewById<View>(R.id.btn_back_home)
 
         val prefs = requireContext().getSharedPreferences("geobiz_config", android.content.Context.MODE_PRIVATE)
 
-        // Mostrar IP actual guardada
-        val ipActual = prefs.getString("server_ip", "192.168.100.17") ?: "192.168.100.17"
+        // Botón para regresar a Home (Inicio)
+        btnBackHome.setOnClickListener {
+            (activity as? MainActivity)?.navigateToTab(2) // 2 es el índice de InicioFragment
+        }
+
+        // Mostrar IP actual guardada (Cambiado a localhost por defecto)
+        val ipActual = prefs.getString("server_ip", "localhost") ?: "localhost"
         textActual.text = "IP actual: $ipActual"
         editIp.setText(ipActual)
 
