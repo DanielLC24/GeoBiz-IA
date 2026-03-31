@@ -29,6 +29,7 @@ import org.osmdroid.views.overlay.Polygon
 import org.osmdroid.views.overlay.infowindow.BasicInfoWindow
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
+import java.util.Locale
 
 class MapFragment : Fragment() {
 
@@ -97,6 +98,26 @@ class MapFragment : Fragment() {
             }
         }
         mapView.invalidate()
+
+        val prefs = requireContext().getSharedPreferences("geobiz_session", Context.MODE_PRIVATE)
+        val shouldRestore = prefs.getBoolean("restore_map_pending", false)
+        if (shouldRestore && prefs.contains("last_lat") && prefs.contains("last_lng")) {
+            val lat = prefs.getFloat("last_lat", defaultCenter.latitude.toFloat()).toDouble()
+            val lng = prefs.getFloat("last_lng", defaultCenter.longitude.toFloat()).toDouble()
+            val business = prefs.getString("last_business_label", null)
+
+            prefs.edit().putBoolean("restore_map_pending", false).apply()
+            val point = GeoPoint(lat, lng)
+            analysisCenter = point
+            dibujarCirculo(point, radioMetros)
+            mapView.controller.setZoom(15.5)
+            mapView.controller.setCenter(point)
+            mapView.overlays.removeAll { it is Marker && it !is MyLocationNewOverlay }
+            mapView.invalidate()
+            if (!business.isNullOrBlank()) {
+                ejecutarLogicaIA(business)
+            }
+        }
     }
 
     private fun checkLocationPermission() {
@@ -315,6 +336,14 @@ class MapFragment : Fragment() {
                         val competenciaLabel = trafico1Label
                         val competenciaTotal = totalSeleccionado
                         val directa = resultado.osm.competencia_directa.firstOrNull() ?: 0
+                        val scoreFinal = resultado.score_final.firstOrNull() ?: 0.0
+                        val indiceSocio = resultado.inegi.indice_socio.firstOrNull() ?: 0.0
+                        val baresTotal = resultado.osm.bares.firstOrNull() ?: 0
+                        val fastFoodTotal = resultado.osm.fast_food.firstOrNull() ?: 0
+                        val supermercadosTotal = resultado.osm.supermercados.firstOrNull() ?: 0
+                        val bancosTotal = resultado.osm.bancos.firstOrNull() ?: 0
+                        val restaurantesTotal = resultado.osm.restaurantes.firstOrNull() ?: 0
+                        val busesTotal = resultado.osm.paradas_bus.firstOrNull() ?: 0
 
                         val marker = Marker(mapView).apply {
                             position = currentAnalysisCenter
@@ -341,9 +370,27 @@ class MapFragment : Fragment() {
                         marker.showInfoWindow()
                         mapView.invalidate()
 
+                        val prefs = requireContext().getSharedPreferences("geobiz_session", Context.MODE_PRIVATE)
+                        prefs.edit()
+                            .putString("last_business_label", tipoSeleccionado)
+                            .putFloat("last_score_final", scoreFinal.toFloat())
+                            .putFloat("last_indice_socio", indiceSocio.toFloat())
+                            .putInt("last_cafes", cafes)
+                            .putInt("last_bares", baresTotal)
+                            .putInt("last_fast_food", fastFoodTotal)
+                            .putInt("last_supermercados", supermercadosTotal)
+                            .putInt("last_bancos", bancosTotal)
+                            .putInt("last_restaurantes", restaurantesTotal)
+                            .putInt("last_competencia_total", competenciaTotal)
+                            .putInt("last_competencia_directa", directa)
+                            .putInt("last_buses", busesTotal)
+                            .putFloat("last_lat", currentAnalysisCenter.latitude.toFloat())
+                            .putFloat("last_lng", currentAnalysisCenter.longitude.toFloat())
+                            .apply()
+
                         Toast.makeText(
                             requireContext(),
-                            "${resultado.recomendacion[0]} — Score: ${resultado.score_final[0]}/100",
+                            "${resultado.recomendacion[0]} — Score: ${String.format(Locale.getDefault(), "%.1f", scoreFinal)}/100",
                             Toast.LENGTH_LONG
                         ).show()
                     }

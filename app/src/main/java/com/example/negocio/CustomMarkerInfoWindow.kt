@@ -98,6 +98,11 @@ class CustomMarkerInfoWindow(mapView: MapView) : InfoWindow(R.layout.infowindow_
         mView.findViewById<TextView>(R.id.textNivelSocio).text = nivel
 
         mView.findViewById<MaterialButton>(R.id.btnReporteDetallado).setOnClickListener {
+            mapView.context.getSharedPreferences("geobiz_session", android.content.Context.MODE_PRIVATE)
+                .edit()
+                .putBoolean("restore_map_pending", true)
+                .apply()
+            (mapView.context as? MainActivity)?.navigateToTab(0)
             close()
         }
     }
