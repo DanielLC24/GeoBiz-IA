@@ -208,6 +208,24 @@ class MapFragment : Fragment() {
             "shop"        to 0xFF16A085.toInt()
         )
 
+        fun displayNameForOsmType(tipoOSM: String): String = when (tipoOSM.lowercase()) {
+            "restaurant" -> "Restaurante"
+            "fast_food" -> "Fonda"
+            "food_court" -> "Comida"
+            "cafe" -> "Café"
+            "bar" -> "Bar"
+            "pharmacy" -> "Farmacia"
+            "fuel" -> "Gasolinera"
+            "shop" -> "Tienda"
+            "marketplace" -> "Mercado"
+            "car_repair" -> "Taller"
+            "supermarket" -> "Supermercado"
+            else -> "Lugar"
+        }
+
+        fun formatTipoLabel(raw: String): String =
+            raw.replace('_', ' ').replaceFirstChar { it.uppercase() }
+
         lifecycleScope.launch {
             try {
                 // ── 1. Score principal ────────────────────────────
@@ -219,6 +237,7 @@ class MapFragment : Fragment() {
                 )
 
                 // ── 2. Lugares cercanos por tipo ──────────────────
+                val totalsByTipo = mutableMapOf<String, Int>()
                 tiposOSM.forEach { tipoOSM ->
                     val responseLugares = RetrofitClient.getApi(requireContext()).getLugaresCercanos(
                         lat   = currentAnalysisCenter.latitude,
@@ -228,15 +247,18 @@ class MapFragment : Fragment() {
                     )
 
                     if (responseLugares.isSuccessful) {
-                        val lugares = responseLugares.body()?.lugares ?: emptyList()
+                        val body = responseLugares.body()
+                        val total = body?.total?.firstOrNull() ?: body?.lugares?.size ?: 0
+                        totalsByTipo[tipoOSM] = total
+                        val lugares = body?.lugares ?: emptyList()
                         val color   = colorPorTipo[tipoOSM] ?: 0xFF95A5A6.toInt()
 
                         withContext(Dispatchers.Main) {
-                            lugares.forEach { lugar ->
+                            lugares.forEachIndexed { index, lugar ->
                                 val marcador = Marker(mapView).apply {
                                     position = GeoPoint(lugar.lat[0], lugar.lng[0])
-                                    title    = lugar.tipo[0].replaceFirstChar { it.uppercase() }
-                                    snippet  = "Tipo: ${lugar.tipo[0]}"
+                                    title    = "${displayNameForOsmType(tipoOSM)} ${index + 1}"
+                                    snippet  = "Tipo: ${formatTipoLabel(lugar.tipo[0])}"
                                     setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                                     icon     = createColoredMarkerIcon(color)
                                     infoWindow = CustomMarkerInfoWindow(mapView)
@@ -252,23 +274,65 @@ class MapFragment : Fragment() {
                 if (responseScore.isSuccessful) {
                     val resultado = responseScore.body()!!
                     withContext(Dispatchers.Main) {
+                        val totalSeleccionado = tiposOSM.sumOf { totalsByTipo[it] ?: 0 }
+                        val cafes = totalsByTipo["cafe"] ?: resultado.osm.cafes.firstOrNull() ?: 0
+                        // Posible competencia secundaria según negocio seleccionado
+                        val (compTipo, compLabel) = when (tipoSeleccionado.lowercase()) {
+                            "restaurante"  -> "bar" to "Bares"
+                            "cafeteria"    -> "fast_food" to "Fondas"
+                            "taller autos" -> "car_repair" to "Talleres"
+                            "farmacia"     -> "supermarket" to "Supermercados"
+                            "papeleria"    -> "supermarket" to "Supermercados"
+                            "floreria"     -> "marketplace" to "Mercados"
+                            else           -> "shop" to "Tiendas"
+                        }
+                        val compResponse = RetrofitClient.getApi(requireContext()).getLugaresCercanos(
+                            lat = currentAnalysisCenter.latitude,
+                            lng = currentAnalysisCenter.longitude,
+                            tipo = compTipo,
+                            radio = radioMetros.toInt()
+                        )
+                        val compValue = if (compResponse.isSuccessful) {
+                            compResponse.body()?.total?.firstOrNull() ?: compResponse.body()?.lugares?.size ?: 0
+                        } else 0
+                        val buses = resultado.osm.paradas_bus.firstOrNull() ?: 0
+
+                        val trafico1Label = when (tipoSeleccionado.lowercase()) {
+                            "restaurante" -> "Restaurantes"
+                            "cafeteria" -> "Cafés"
+                            "taller autos" -> "Gasolineras"
+                            "farmacia" -> "Farmacias"
+                            "papeleria" -> "Tiendas"
+                            "floreria" -> "Mercados"
+                            else -> "Negocios"
+                        }
+
+                        val trafico1Value = when (tipoSeleccionado.lowercase()) {
+                            "cafeteria" -> cafes
+                            else -> totalSeleccionado
+                        }
+
+                        val competenciaLabel = trafico1Label
+                        val competenciaTotal = totalSeleccionado
+                        val directa = resultado.osm.competencia_directa.firstOrNull() ?: 0
+
                         val marker = Marker(mapView).apply {
                             position = currentAnalysisCenter
                             title    = resultado.recomendacion[0]
                             snippet = buildString {
-                                append("Score: ${resultado.score_final[0]}/100\n")
-                                append("─────────────────\n")
-                                append("Tráfico\n")
-                                append("  Cafés: ${resultado.osm.cafes[0]}\n")
-                                append("  Bares: ${resultado.osm.bares[0]}\n")
-                                append("  Bus:   ${resultado.osm.paradas_bus[0]}\n")
-                                append("─────────────────\n")
-                                append("Competencia\n")
-                                append("  Restaurantes: ${resultado.osm.restaurantes[0]}\n")
-                                append("  Directa:      ${resultado.osm.competencia_directa[0]}\n")
-                                append("─────────────────\n")
-                                append("Socioec. INEGI\n")
-                                append("  Índice: ${resultado.inegi.indice_socio[0]}\n")
+                                append("geobiz_card=zona\n")
+                                append("negocio=$tipoSeleccionado\n")
+                                append("score=${resultado.score_final.firstOrNull() ?: 0.0}\n")
+                                append("trafico1_label=$trafico1Label\n")
+                                append("trafico1_value=$trafico1Value\n")
+                                append("trafico2_label=$compLabel\n")
+                                append("trafico2_value=$compValue\n")
+                                append("trafico3_label=Buses\n")
+                                append("trafico3_value=$buses\n")
+                                append("competencia_label=$competenciaLabel\n")
+                                append("competencia_total=$competenciaTotal\n")
+                                append("competencia_directa=$directa\n")
+                                append("socio_indice=${resultado.inegi.indice_socio.firstOrNull() ?: 0.0}\n")
                             }
                             setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                             infoWindow = CustomMarkerInfoWindow(mapView)
