@@ -39,6 +39,7 @@ class MapFragment : Fragment() {
     private lateinit var locationOverlay: MyLocationNewOverlay
     private var analysisCircle: Polygon? = null
     private var analysisCenter: GeoPoint? = null
+    private var skipMyLocationAutoCenter: Boolean = false
 
     private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
         if (isGranted) {
@@ -61,6 +62,9 @@ class MapFragment : Fragment() {
         mapView.controller.setCenter(defaultCenter)
         mapView.controller.setZoom(15.0)
         mapView.setMultiTouchControls(true)
+
+        val prefs = requireContext().getSharedPreferences("geobiz_session", Context.MODE_PRIVATE)
+        skipMyLocationAutoCenter = prefs.getBoolean("restore_map_pending", false)
 
         Toast.makeText(requireContext(), "Mantén presionado para definir un área de análisis", Toast.LENGTH_LONG).show()
 
@@ -99,24 +103,25 @@ class MapFragment : Fragment() {
         }
         mapView.invalidate()
 
-        val prefs = requireContext().getSharedPreferences("geobiz_session", Context.MODE_PRIVATE)
         val shouldRestore = prefs.getBoolean("restore_map_pending", false)
         if (shouldRestore && prefs.contains("last_lat") && prefs.contains("last_lng")) {
             val lat = prefs.getFloat("last_lat", defaultCenter.latitude.toFloat()).toDouble()
             val lng = prefs.getFloat("last_lng", defaultCenter.longitude.toFloat()).toDouble()
             val business = prefs.getString("last_business_label", null)
+            val zoom = prefs.getFloat("last_zoom", 15.5f).toDouble()
 
             prefs.edit().putBoolean("restore_map_pending", false).apply()
             val point = GeoPoint(lat, lng)
             analysisCenter = point
             dibujarCirculo(point, radioMetros)
-            mapView.controller.setZoom(15.5)
+            mapView.controller.setZoom(zoom)
             mapView.controller.setCenter(point)
             mapView.overlays.removeAll { it is Marker && it !is MyLocationNewOverlay }
             mapView.invalidate()
             if (!business.isNullOrBlank()) {
                 ejecutarLogicaIA(business)
             }
+            skipMyLocationAutoCenter = false
         }
     }
 
@@ -133,8 +138,10 @@ class MapFragment : Fragment() {
             enableMyLocation()
             runOnFirstFix {
                 activity?.runOnUiThread {
-                    mapView.controller.animateTo(myLocation)
-                    mapView.controller.setZoom(16.0)
+                    if (!skipMyLocationAutoCenter) {
+                        mapView.controller.animateTo(myLocation)
+                        mapView.controller.setZoom(16.0)
+                    }
                 }
             }
         }
@@ -386,6 +393,7 @@ class MapFragment : Fragment() {
                             .putInt("last_buses", busesTotal)
                             .putFloat("last_lat", currentAnalysisCenter.latitude.toFloat())
                             .putFloat("last_lng", currentAnalysisCenter.longitude.toFloat())
+                            .putFloat("last_zoom", mapView.zoomLevelDouble.toFloat())
                             .apply()
 
                         Toast.makeText(
