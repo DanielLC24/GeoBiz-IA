@@ -131,4 +131,38 @@
             android:scaleType="centerInside"
             android:padding="10dp" />
     </LinearLayout>
+
+    <!-- Botón Mejor Punto IA - Subido para evitar la nav bar -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_find_best_point"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="110dp"
+        android:text="Sugerir mejor ubicación"
+        android:textAllCaps="false"
+        android:visibility="gone"
+        android:elevation="10dp"
+        app:cornerRadius="24dp"
+        app:backgroundTint="@color/secondary_geobiz"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Overlay de carga -->
+    <FrameLayout
+        android:id="@+id/loading_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#99000000"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true"
+        android:elevation="20dp">
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminateTint="@color/primary_geobiz" />
+    </FrameLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

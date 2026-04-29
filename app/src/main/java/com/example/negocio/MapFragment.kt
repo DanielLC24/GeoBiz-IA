@@ -78,6 +78,7 @@ class MapFragment : Fragment() {
                 analysisCenter = p
                 dibujarCirculo(p, radioMetros)
                 mapView.overlays.removeAll { it is Marker && it !is MyLocationNewOverlay }
+                view.findViewById<View>(R.id.btn_find_best_point).visibility = View.GONE
                 mapView.invalidate()
                 Toast.makeText(requireContext(), "Nueva área de análisis definida", Toast.LENGTH_SHORT).show()
                 return true
@@ -101,6 +102,14 @@ class MapFragment : Fragment() {
                 mapView.controller.setZoom(15.0)
             }
         }
+
+        view.findViewById<View>(R.id.btn_find_best_point).setOnClickListener {
+            val lastType = prefs.getString("last_business_label", null)
+            if (lastType != null) {
+                buscarMejorPuntoIA(lastType)
+            }
+        }
+
         mapView.invalidate()
 
         val shouldRestore = prefs.getBoolean("restore_map_pending", false)
@@ -159,7 +168,6 @@ class MapFragment : Fragment() {
 
         val dismiss = { popupWindow.dismiss() }
 
-        // --- NUEVO: Botón de cerrar ---
         popupView.findViewById<View>(R.id.btn_close_popup).setOnClickListener { dismiss() }
 
         popupView.findViewById<View>(R.id.option_one).setOnClickListener { ejecutarLogicaIA("Restaurante"); dismiss() }
@@ -187,11 +195,85 @@ class MapFragment : Fragment() {
         mapView.invalidate()
     }
 
-    // ── Icono de color para marcadores de competencia ─────────────
     private fun createColoredMarkerIcon(color: Int): android.graphics.drawable.Drawable {
-        val drawable = ContextCompat.getDrawable(requireContext(), R.drawable.ic_custom_marker)!!.mutate()
+        val drawable = ContextCompat.getDrawable(requireContext(), R.drawable.ic_best_location)!!.mutate()
         drawable.setTint(color)
         return drawable
+    }
+
+    private fun buscarMejorPuntoIA(tipoSeleccionado: String) {
+        val currentCenter = analysisCenter ?: return
+        val btnFindBest = view?.findViewById<View>(R.id.btn_find_best_point)
+        val loadingOverlay = view?.findViewById<View>(R.id.loading_overlay)
+
+        loadingOverlay?.visibility = View.VISIBLE
+        btnFindBest?.visibility = View.GONE
+
+        val businessType = BusinessType.fromLabel(tipoSeleccionado)
+        val tipoParaApi = businessType?.jsonKey ?: tipoSeleccionado
+
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitClient.getApi(requireContext()).getMejorPunto(
+                    lat = currentCenter.latitude,
+                    lng = currentCenter.longitude,
+                    tipo = tipoParaApi,
+                    radio = radioMetros.toInt()
+                )
+
+                if (response.isSuccessful && response.body() != null) {
+                    val puntos = response.body()!!
+                    withContext(Dispatchers.Main) {
+                        val overlaysToRemove = mapView.overlays.filterIsInstance<Marker>()
+                            .filter { it !is MyLocationNewOverlay }
+                        mapView.overlays.removeAll(overlaysToRemove)
+
+                        puntos.forEachIndexed { index, punto ->
+                            val lat = punto.lat.firstOrNull() ?: 0.0
+                            val lng = punto.lng.firstOrNull() ?: 0.0
+                            val score = punto.score_final.firstOrNull() ?: 0.0
+                            val point = GeoPoint(lat, lng)
+
+                            val marcador = Marker(mapView).apply {
+                                position = point
+                                title = when(index) {
+                                    0 -> "¡Mejor Opción! (Oro)"
+                                    1 -> "Excelente Opción (Plata)"
+                                    2 -> "Buena Opción (Bronce)"
+                                    else -> "Recomendación"
+                                }
+                                snippet = "Score: ${String.format(Locale.getDefault(), "%.1f", score)}"
+                                setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+                                
+                                icon = when (index) {
+                                    0 -> createColoredMarkerIcon(0xFFFFD700.toInt()) // Oro
+                                    1 -> createColoredMarkerIcon(0xFFC0C0C0.toInt()) // Plata
+                                    2 -> createColoredMarkerIcon(0xFFCD7F32.toInt()) // Bronce
+                                    else -> createColoredMarkerIcon(Color.WHITE)
+                                }
+                                infoWindow = CustomMarkerInfoWindow(mapView)
+                            }
+                            mapView.overlays.add(marcador)
+                            if (index == 0) mapView.controller.animateTo(point)
+                        }
+                        mapView.invalidate()
+                        loadingOverlay?.visibility = View.GONE
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        loadingOverlay?.visibility = View.GONE
+                        btnFindBest?.visibility = View.VISIBLE
+                        Toast.makeText(requireContext(), "Error en la respuesta de la IA", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    loadingOverlay?.visibility = View.GONE
+                    btnFindBest?.visibility = View.VISIBLE
+                    Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     private fun ejecutarLogicaIA(tipoSeleccionado: String) {
@@ -208,11 +290,9 @@ class MapFragment : Fragment() {
 
         Toast.makeText(requireContext(), "Analizando zona con IA...", Toast.LENGTH_SHORT).show()
 
-        // ── Obtener tipo para la API usando el Enum ───────────────
         val businessType = BusinessType.fromLabel(tipoSeleccionado)
         val tipoParaApi = businessType?.jsonKey ?: tipoSeleccionado
 
-        // ── Mapeo tipo negocio → tipos OSM a marcar ───────────────
         val tiposOSM = when (tipoSeleccionado.lowercase()) {
             "restaurante"  -> listOf("restaurant", "fast_food", "food_court")
             "cafeteria"    -> listOf("cafe", "bar")
@@ -223,7 +303,6 @@ class MapFragment : Fragment() {
             else           -> listOf("restaurant")
         }
 
-        // ── Colores por tipo ──────────────────────────────────────
         val colorPorTipo = mapOf(
             "restaurant"  to 0xFFE74C3C.toInt(),
             "fast_food"   to 0xFFE67E22.toInt(),
@@ -256,7 +335,6 @@ class MapFragment : Fragment() {
 
         lifecycleScope.launch {
             try {
-                // ── 1. Score principal ────────────────────────────
                 val responseScore = RetrofitClient.getApi(requireContext()).predecir(
                     lat   = currentAnalysisCenter.latitude,
                     lng   = currentAnalysisCenter.longitude,
@@ -264,7 +342,6 @@ class MapFragment : Fragment() {
                     radio = radioMetros.toInt()
                 )
 
-                // ── 2. Lugares cercanos por tipo ──────────────────
                 val totalsByTipo = mutableMapOf<String, Int>()
                 tiposOSM.forEach { tipoOSM ->
                     val responseLugares = RetrofitClient.getApi(requireContext()).getLugaresCercanos(
@@ -279,7 +356,13 @@ class MapFragment : Fragment() {
                         val total = body?.total?.firstOrNull() ?: body?.lugares?.size ?: 0
                         totalsByTipo[tipoOSM] = total
                         val lugares = body?.lugares ?: emptyList()
-                        val color   = colorPorTipo[tipoOSM] ?: 0xFF95A5A6.toInt()
+                        
+                        // Función local para crear iconos coloreados de competencia
+                        fun createCompIcon(color: Int): android.graphics.drawable.Drawable {
+                            val d = ContextCompat.getDrawable(requireContext(), R.drawable.ic_custom_marker)!!.mutate()
+                            d.setTint(color)
+                            return d
+                        }
 
                         withContext(Dispatchers.Main) {
                             lugares.forEachIndexed { index, lugar ->
@@ -288,7 +371,7 @@ class MapFragment : Fragment() {
                                     title    = "${displayNameForOsmType(tipoOSM)} ${index + 1}"
                                     snippet  = "Tipo: ${formatTipoLabel(lugar.tipo[0])}"
                                     setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                                    icon     = createColoredMarkerIcon(color)
+                                    icon     = createCompIcon(colorPorTipo[tipoOSM] ?: 0xFF95A5A6.toInt())
                                     infoWindow = CustomMarkerInfoWindow(mapView)
                                 }
                                 mapView.overlays.add(marcador)
@@ -298,13 +381,11 @@ class MapFragment : Fragment() {
                     }
                 }
 
-                // ── 3. Marcador principal con score ───────────────
                 if (responseScore.isSuccessful) {
                     val resultado = responseScore.body()!!
                     withContext(Dispatchers.Main) {
                         val totalSeleccionado = tiposOSM.sumOf { totalsByTipo[it] ?: 0 }
                         val cafes = totalsByTipo["cafe"] ?: resultado.osm.cafes.firstOrNull() ?: 0
-                        // Posible competencia secundaria según negocio seleccionado
                         val (compTipo, compLabel) = when (tipoSeleccionado.lowercase()) {
                             "restaurante"  -> "bar" to "Bares"
                             "cafeteria"    -> "fast_food" to "Fondas"
@@ -375,6 +456,12 @@ class MapFragment : Fragment() {
                         }
                         mapView.overlays.add(marker)
                         marker.showInfoWindow()
+                        
+                        view?.findViewById<View>(R.id.btn_find_best_point)?.apply {
+                            visibility = View.VISIBLE
+                            bringToFront()
+                        }
+
                         mapView.invalidate()
 
                         val prefs = requireContext().getSharedPreferences("geobiz_session", Context.MODE_PRIVATE)
