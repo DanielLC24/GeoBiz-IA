@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Estilo base de la aplicación -->
     <style name="Theme.GeoBiz" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primary_geobiz</item>
         <item name="colorOnPrimary">@color/on_primary_geobiz</item>
@@ -11,6 +12,13 @@
         <item name="android:windowBackground">@color/background_geobiz</item>
         <item name="android:statusBarColor">@color/background_geobiz</item>
         <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+    <!-- Estilo para la Splash Screen Animada -->
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/background_geobiz</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/portada</item>
+        <item name="postSplashScreenTheme">@style/Theme.GeoBiz</item>
     </style>
 
 </resources>

@@ -5,12 +5,20 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.view.Gravity
 import android.view.View
+import android.view.animation.AnticipateInterpolator
 import android.view.animation.OvershootInterpolator
+import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.animation.doOnEnd
 import androidx.core.content.ContextCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 
@@ -19,6 +27,7 @@ class MainActivity : AppCompatActivity() {
     private var selectedIndex = 2 // Inicio por defecto (centro)
     private val selectedScale = 1.25f
     private val liftDp = 18f
+    private var isSplashReady = false
 
     private val navSelectedBgIds = listOf(
         R.id.nav_analisis_selected_bg,
@@ -50,9 +59,68 @@ class MainActivity : AppCompatActivity() {
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // 1. Instalar Splash Screen y configurarla para que dure 5 segundos
+        val splashScreen = installSplashScreen()
+        splashScreen.setKeepOnScreenCondition { !isSplashReady }
+        
+        Handler(Looper.getMainLooper()).postDelayed({
+            isSplashReady = true
+        }, 2000)
+
         super.onCreate(savedInstanceState)
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         setContentView(R.layout.activity_main)
+
+        // 2. Personalizar la salida de la Splash con un mensaje de "¡Bienvenido!"
+        splashScreen.setOnExitAnimationListener { splashScreenViewProvider ->
+            val splashView = splashScreenViewProvider.view
+            
+            // Crear el mensaje de bienvenida
+            val welcomeText = TextView(this).apply {
+                text = "¡Bienvenido!"
+                textSize = 32f
+                setTextColor(ContextCompat.getColor(this@MainActivity, R.color.primary_geobiz))
+                gravity = Gravity.CENTER
+                alpha = 0f
+                translationY = 50f
+                typeface = android.graphics.Typeface.DEFAULT_BOLD
+            }
+
+            // Añadirlo al contenedor de la splash
+            (splashView as? FrameLayout)?.addView(welcomeText, FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                Gravity.CENTER
+            ).apply {
+                topMargin = 400 // Ajustar según posición del logo
+            })
+
+            // Animación: El texto aparece, espera y luego todo se desliza hacia arriba
+            val textFadeIn = ObjectAnimator.ofFloat(welcomeText, View.ALPHA, 0f, 1f).setDuration(800)
+            val textSlideUp = ObjectAnimator.ofFloat(welcomeText, View.TRANSLATION_Y, 50f, 0f).setDuration(800)
+            
+            val exitSlideUp = ObjectAnimator.ofFloat(
+                splashView,
+                View.TRANSLATION_Y,
+                0f,
+                -splashView.height.toFloat()
+            ).apply {
+                duration = 600
+                startDelay = 1500 // Tiempo para leer "¡Bienvenido!"
+                interpolator = AnticipateInterpolator()
+            }
+
+            val exitFadeOut = ObjectAnimator.ofFloat(splashView, View.ALPHA, 1f, 0f).apply {
+                duration = 400
+                startDelay = 1500
+            }
+
+            AnimatorSet().apply {
+                playTogether(textFadeIn, textSlideUp, exitSlideUp, exitFadeOut)
+                doOnEnd { splashScreenViewProvider.remove() }
+                start()
+            }
+        }
 
         findViewById<View>(R.id.btn_profile_top).setOnClickListener {
             if (selectedIndex < navContainerIds.size) {

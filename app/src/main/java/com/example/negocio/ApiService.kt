@@ -93,17 +93,16 @@ object RetrofitClient {
     private const val BASE_URL = "https://geobiz-api-latest-1.onrender.com/"
 
     fun getApi(context: android.content.Context): ApiService {
-        // Configuración de Certificate Pinning para conexión 100% segura
-        // Nota: He incluido los pins comunes para los certificados emitidos por Let's Encrypt (usado por Render)
         val certificatePinner = CertificatePinner.Builder()
-            .add("geobiz-api-latest-1.onrender.com", "sha256/jQJTbIh0grw0/1TkHSumWb+Fs0Ggogr621gT3PvPKG0=")
-            .add("geobiz-api-latest-1.onrender.com", "sha256/C5+lpZ7tcCFOn2uE53u/BAAtS7Z8y0S5Y6D8ZFY6kUo=")
+            .add("geobiz-api-latest-1.onrender.com", "sha256/T4eoRdbfIYF3G9IOGamqR3Vgye2bNLHQTSCOY8u3y5w=")
+            .add("geobiz-api-latest-1.onrender.com", "sha256/kIdp6NNEd8wsugYyyIYFsi1ylMCED3hZbSR8ZFsa/A4=")
+            .add("geobiz-api-latest-1.onrender.com", "sha256/mEflZT5enoR1FuXLgYYGqnVEoZvmf9c2bVBpiOjYQ0c=")
             .build()
 
         val okHttpClient = OkHttpClient.Builder()
-            .connectTimeout(60, TimeUnit.SECONDS) // Gestiona el 'cold start' de Render
-            .readTimeout(60, TimeUnit.SECONDS)
-            .writeTimeout(60, TimeUnit.SECONDS)
+            .connectTimeout(180, TimeUnit.SECONDS)
+            .readTimeout(180, TimeUnit.SECONDS)
+            .writeTimeout(180, TimeUnit.SECONDS)
             .certificatePinner(certificatePinner)
             .build()
 

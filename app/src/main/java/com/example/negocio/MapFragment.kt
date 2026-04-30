@@ -13,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupWindow
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.cardview.widget.CardView
@@ -30,6 +31,9 @@ import org.osmdroid.views.overlay.infowindow.BasicInfoWindow
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import java.util.Locale
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import java.util.concurrent.TimeUnit
 
 class MapFragment : Fragment() {
 
@@ -40,6 +44,7 @@ class MapFragment : Fragment() {
     private var analysisCircle: Polygon? = null
     private var analysisCenter: GeoPoint? = null
     private var skipMyLocationAutoCenter: Boolean = false
+    private var timerJob: Job? = null
 
     private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
         if (isGranted) {
@@ -180,6 +185,36 @@ class MapFragment : Fragment() {
         popupWindow.showAsDropDown(anchor)
     }
 
+    private fun startLoadingTimer() {
+        val timerText = view?.findViewById<TextView>(R.id.loading_timer)
+        val loadingOverlay = view?.findViewById<View>(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.VISIBLE
+        
+        timerJob?.cancel()
+        timerJob = lifecycleScope.launch {
+            var seconds = 0
+            while (seconds <= 120) {
+                val minutes = seconds / 60
+                val remainingSeconds = seconds % 60
+                withContext(Dispatchers.Main) {
+                    timerText?.text = String.format(Locale.getDefault(), "%02d:%02d", minutes, remainingSeconds)
+                }
+                delay(1000)
+                seconds++
+            }
+            // Si llega a 120, mostrar mensaje de timeout
+            withContext(Dispatchers.Main) {
+                Toast.makeText(requireContext(), "Tiempo de espera agotado. El servidor tarda más de lo esperado.", Toast.LENGTH_LONG).show()
+                loadingOverlay?.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun stopLoadingTimer() {
+        timerJob?.cancel()
+        view?.findViewById<View>(R.id.loading_overlay)?.visibility = View.GONE
+    }
+
     private fun dibujarCirculo(centro: GeoPoint, radioMetros: Double) {
         analysisCircle?.let { mapView.overlays.remove(it) }
         val primaryColor = ContextCompat.getColor(requireContext(), R.color.map_zone_stroke)
@@ -204,10 +239,9 @@ class MapFragment : Fragment() {
     private fun buscarMejorPuntoIA(tipoSeleccionado: String) {
         val currentCenter = analysisCenter ?: return
         val btnFindBest = view?.findViewById<View>(R.id.btn_find_best_point)
-        val loadingOverlay = view?.findViewById<View>(R.id.loading_overlay)
 
-        loadingOverlay?.visibility = View.VISIBLE
         btnFindBest?.visibility = View.GONE
+        startLoadingTimer()
 
         val businessType = BusinessType.fromLabel(tipoSeleccionado)
         val tipoParaApi = businessType?.jsonKey ?: tipoSeleccionado
@@ -257,20 +291,24 @@ class MapFragment : Fragment() {
                             if (index == 0) mapView.controller.animateTo(point)
                         }
                         mapView.invalidate()
-                        loadingOverlay?.visibility = View.GONE
+                        stopLoadingTimer()
                     }
                 } else {
                     withContext(Dispatchers.Main) {
-                        loadingOverlay?.visibility = View.GONE
+                        stopLoadingTimer()
                         btnFindBest?.visibility = View.VISIBLE
                         Toast.makeText(requireContext(), "Error en la respuesta de la IA", Toast.LENGTH_SHORT).show()
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    loadingOverlay?.visibility = View.GONE
+                    stopLoadingTimer()
                     btnFindBest?.visibility = View.VISIBLE
-                    Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                    if (e is java.net.SocketTimeoutException) {
+                        Toast.makeText(requireContext(), "Error: Tiempo de espera agotado (Timeout)", Toast.LENGTH_LONG).show()
+                    } else {
+                        Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }
@@ -288,7 +326,7 @@ class MapFragment : Fragment() {
         mapView.overlays.removeAll(overlaysToRemove)
         mapView.invalidate()
 
-        Toast.makeText(requireContext(), "Analizando zona con IA...", Toast.LENGTH_SHORT).show()
+        startLoadingTimer()
 
         val businessType = BusinessType.fromLabel(tipoSeleccionado)
         val tipoParaApi = businessType?.jsonKey ?: tipoSeleccionado
@@ -357,7 +395,6 @@ class MapFragment : Fragment() {
                         totalsByTipo[tipoOSM] = total
                         val lugares = body?.lugares ?: emptyList()
                         
-                        // Función local para crear iconos coloreados de competencia
                         fun createCompIcon(color: Int): android.graphics.drawable.Drawable {
                             val d = ContextCompat.getDrawable(requireContext(), R.drawable.ic_custom_marker)!!.mutate()
                             d.setTint(color)
@@ -483,6 +520,8 @@ class MapFragment : Fragment() {
                             .putFloat("last_zoom", mapView.zoomLevelDouble.toFloat())
                             .apply()
 
+                        stopLoadingTimer()
+
                         Toast.makeText(
                             requireContext(),
                             "${resultado.recomendacion[0]} — Score: ${String.format(Locale.getDefault(), "%.1f", scoreFinal)}/100",
@@ -493,8 +532,13 @@ class MapFragment : Fragment() {
 
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
+                    stopLoadingTimer()
                     android.util.Log.e("API_ERROR", "Error: ${e.javaClass.name}: ${e.message}", e)
-                    Toast.makeText(requireContext(), "Error: ${e.javaClass.simpleName}: ${e.message}", Toast.LENGTH_LONG).show()
+                    if (e is java.net.SocketTimeoutException) {
+                        Toast.makeText(requireContext(), "Error: Tiempo de espera agotado (Timeout)", Toast.LENGTH_LONG).show()
+                    } else {
+                        Toast.makeText(requireContext(), "Error: ${e.javaClass.simpleName}: ${e.message}", Toast.LENGTH_LONG).show()
+                    }
                 }
             }
         }
@@ -510,5 +554,6 @@ class MapFragment : Fragment() {
         super.onPause()
         mapView.onPause()
         if (::locationOverlay.isInitialized) locationOverlay.disableMyLocation()
+        timerJob?.cancel()
     }
 }
